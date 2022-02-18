@@ -48,7 +48,7 @@ export default {
       reponsive: true,
       maintainAspectRatio: false,
       rotation: (props.rotation / 2) * -1,
-      circumference: 350,
+      circumference: 355,
       cutout: "85%",
       tooltips: {
         enabled: true,

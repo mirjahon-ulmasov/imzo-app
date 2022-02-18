@@ -12,7 +12,7 @@ const routes = [
       {
         path: "dashboard",
         name: "Dashboard",
-        component: () => import("@/views/admin/Dashboard.vue"),
+        component: () => import("@/views/admin/Dashboard/index.vue"),
         meta: {
           role: "admin",
           link: "dashboard",
@@ -25,7 +25,7 @@ const routes = [
       {
         path: "users",
         name: "Users",
-        component: () => import("@/views/admin/Users.vue"),
+        component: () => import("@/views/admin/Users/index.vue"),
         meta: {
           role: "admin",
           link: "users",
@@ -38,7 +38,7 @@ const routes = [
       {
         path: "requests",
         name: "Requests",
-        component: () => import("@/views/admin/Requests.vue"),
+        component: () => import("@/views/admin/Requests/index.vue"),
         meta: {
           role: "admin",
           link: "requests",
@@ -51,7 +51,7 @@ const routes = [
       {
         path: "orders",
         name: "Orders",
-        component: () => import("@/views/admin/Orders.vue"),
+        component: () => import("@/views/admin/Orders/index.vue"),
         meta: {
           role: "admin",
           link: "orders",
@@ -64,7 +64,7 @@ const routes = [
       {
         path: "main",
         name: "Main",
-        component: () => import("@/views/admin/Main.vue"),
+        component: () => import("@/views/admin/Main/index.vue"),
         meta: {
           role: "admin",
           link: "main",
@@ -77,7 +77,7 @@ const routes = [
       {
         path: "products",
         name: "Products",
-        component: () => import("@/views/admin/Products.vue"),
+        component: () => import("@/views/admin/Products/index.vue"),
         meta: {
           role: "admin",
           link: "products",
@@ -90,7 +90,7 @@ const routes = [
       {
         path: "notifications",
         name: "Notifications",
-        component: () => import("@/views/admin/Notifications.vue"),
+        component: () => import("@/views/admin/Notifications/index.vue"),
         meta: {
           role: "admin",
           link: "notifications",
@@ -103,7 +103,7 @@ const routes = [
       {
         path: "feedback",
         name: "Feedback",
-        component: () => import("@/views/admin/Feedback.vue"),
+        component: () => import("@/views/admin/Feedback/index.vue"),
         meta: {
           role: "admin",
           link: "feedback",
@@ -116,7 +116,7 @@ const routes = [
       {
         path: "showrooms",
         name: "Showrooms",
-        component: () => import("@/views/admin/Showrooms.vue"),
+        component: () => import("@/views/admin/Showrooms/index.vue"),
         meta: {
           role: "admin",
           link: "showrooms",
