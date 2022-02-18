@@ -1,28 +1,61 @@
 <template>
-  <div class="dropdown">
-    <div :class="isOpen?'dropdown-input active':'dropdown-input'" @click="isOpen = !isOpen">
-      Месяц
-      <div :class="isOpen?'triangle-down':'triangle-up'" />
+  <div class="dropdown" @blur="isOpen = false">
+    <div class="dropdown-input" @click="isOpen = !isOpen">
+      {{ selected.title }}
+      <div :class="isOpen ? 'triangle-down' : 'triangle-up'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
       <ul>
-        <li>За все время</li>
-        <li>Неделя</li>
-        <li>Месяц</li>
-        <li>Квартал</li>
-        <li>Год</li>
+        <li
+          v-for="(option, i) in options"
+          :key="i"
+          @click="
+            selected = option;
+            isOpen = false;
+            $emit('input', option.value);
+          "
+        >
+          {{ option.title }}
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 export default {
-  setup() {
-    let isOpen = ref(false);
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    default: {
+      type: Object,
+      required: false,
+      default: null,
+    },
+    tabIndex: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
 
-    return { isOpen };
+  setup(props, context) {
+    let isOpen = ref(false);
+    let selected = ref(
+      props.default
+        ? props.default
+        : props.options.length > 0
+        ? props.options[0]
+        : null
+    );
+
+    onMounted(() => {
+      context.emit("input", selected.value.value);
+    });
+    return { isOpen, selected };
   },
 };
 </script>
@@ -36,7 +69,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 170px;
+    width: 190px;
     height: 30px;
     background: #ebf5ff;
     border-radius: 10px;
@@ -69,7 +102,7 @@ export default {
     position: absolute;
     top: 2.5rem;
     left: 0px;
-    width: 170px;
+    width: 190px;
     background: #fff;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;

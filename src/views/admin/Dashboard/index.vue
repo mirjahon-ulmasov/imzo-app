@@ -1,7 +1,17 @@
 <template>
   <div class="nav-bar">
     <h3>Общие сведения</h3>
-    <dropdown></dropdown>
+    <dropdown
+      @input="filterPage"
+      :options="[
+        { title: 'За все время', value: 'all' },
+        { title: 'Неделя', value: 'week' },
+        { title: 'Месяц', value: 'month' },
+        { title: 'Квартал', value: 'quarter' },
+        { title: 'Год', value: 'year' },
+      ]"
+      :default="{ title: 'Месяц', value: 'month' }"
+    ></dropdown>
   </div>
   <div class="main-content">
     <p>Количество посещений: <span>1.900.000</span></p>
@@ -31,7 +41,7 @@
         <p>Количество пользователей: <span>192.000</span></p>
         <div class="charts">
           <DoughnutChart
-            :value="53.4"
+            :value="73.4"
             backgroundColor="#51aafd"
             hoverBackgroundColor="#4490d6"
             :rotation="90"
@@ -42,22 +52,18 @@
             hoverBackgroundColor="#57af4f"
           />
         </div>
-        <p style="margin-left: 1.5rem">
-          <span
-            class="radio"
-            style="
-              background: linear-gradient(180deg, #50a9fc 0%, #2e7fcb 100%);
-            "
-          /><span>110.000</span>
+        <p
+          class="statistics"
+          style="--color: linear-gradient(180deg, #50a9fc 0%, #2e7fcb 100%)"
+        >
+          <span>110.000</span>
           гостей
         </p>
-        <p style="margin-left: 1.5rem">
-          <span
-            class="radio"
-            style="
-              background: linear-gradient(180deg, #4dd043 0%, #34ad2b 100%);
-            "
-          /><span>82.000</span>
+        <p
+          class="statistics"
+          style="--color: linear-gradient(180deg, #4dd043 0%, #34ad2b 100%)"
+        >
+          <span>82.000</span>
           зарегистрированных
         </p>
       </div>
@@ -78,36 +84,52 @@
             hoverBackgroundColor="#4490d6"
           />
         </div>
-        <p style="margin-left: 1.5rem">
-          <span
-            class="radio"
-            style="
-              background: linear-gradient(180deg, #fca3dd 0%, #e24fb1 100%);
-            "
-          ></span
-          ><span>30.000 пользователей</span> - женщины
+        <p
+          class="statistics"
+          style="--color: linear-gradient(180deg, #fca3dd 0%, #e24fb1 100%)"
+        >
+          <span>30.000 пользователей</span> - женщины
         </p>
-        <p style="margin-left: 1.5rem">
-          <span
-            class="radio"
-            style="
-              background: linear-gradient(180deg, #50a9fc 0%, #2a7dca 100%);
-            "
-          ></span
-          ><span>52.000 пользователей</span> - мужчины
+        <p
+          class="statistics"
+          style="--color: linear-gradient(180deg, #50a9fc 0%, #2a7dca 100%)"
+        >
+          <span>52.000 пользователей</span> - мужчины
         </p>
       </div>
     </div>
     <div class="graph">
       <div class="content">
         <h3>Статистика продаж</h3>
-        <p>Продажи</p>
+        <p :style="`--color: ${stroke}`">Продажи</p>
         <div class="actions">
-          <dropdown></dropdown>
-          <dropdown></dropdown>
+          <dropdown
+            @input="filterChart"
+            :options="[
+              { title: 'Товар', value: 'product' },
+              { title: 'Отзывы', value: 'reviews' },
+              { title: 'Замер', value: 'measurement' },
+            ]"
+            :default="{ title: 'Товар', value: 'product' }"
+          ></dropdown>
+          <dropdown
+            @input="filterChart"
+            :options="[
+              { title: 'За все время', value: 'all' },
+              { title: 'Неделя', value: 'week' },
+              { title: 'Месяц', value: 'month' },
+              { title: 'Квартал', value: 'quarter' },
+              { title: 'Год', value: 'year' },
+            ]"
+            :default="{ title: 'Месяц', value: 'month' }"
+          ></dropdown>
         </div>
       </div>
-      <LineGraph />
+      <LineGraph
+        :color="stroke"
+        :backgroundColor="fill"
+        :labels="daysInMonth"
+      />
     </div>
   </div>
 </template>
@@ -116,10 +138,47 @@
 import InfoCard from "@/components/ui/cards/InfoCard.vue";
 import DoughnutChart from "@/components/charts/Doughnut.vue";
 import LineGraph from "@/components/charts/LineGraph.vue";
+import { computed, ref } from "vue";
 export default {
   components: { InfoCard, DoughnutChart, LineGraph },
   setup() {
-    return {};
+    const filterPage = val => {
+      console.log(val);
+    };
+
+    // ------------------ Line Chart data ------------------
+    const stroke = ref("#369BFF");
+    const fill = ref("#efffff");
+
+    const daysInMonth = computed(() => {
+      return new Array(
+        new Date(
+          new Date().getFullYear(),
+          new Date().getMonth() + 2,
+          0
+        ).getDate()
+      )
+        .fill("")
+        .map((_, i) => i + 1);
+    });
+
+    const filterChart = val => {
+      stroke.value =
+        val === "reviews"
+          ? "#FDD751"
+          : val === "measurement"
+          ? "#4EC217"
+          : "#369BFF";
+
+      fill.value =
+        val === "reviews"
+          ? "#effff1"
+          : val === "measurement"
+          ? "#effff3"
+          : "#efffff";
+      console.log(val);
+    };
+    return { daysInMonth, filterChart, filterPage, stroke, fill };
   },
 };
 </script>
@@ -183,13 +242,16 @@ export default {
         margin: 15px 0;
       }
 
-      .radio {
-        position: absolute;
-        top: -0.7rem;
-        left: -1.5rem;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
+      .statistics {
+        &::before {
+          display: inline-block;
+          content: "";
+          width: 12px;
+          height: 12px;
+          margin-right: 0.7rem;
+          border-radius: 50%;
+          background: var(--color);
+        }
       }
 
       h4 {
@@ -238,12 +300,12 @@ export default {
           height: 12px;
           margin-right: 0.7rem;
           border-radius: 50%;
-          background: #51aafd;
+          background: var(--color);
         }
       }
 
       .actions {
-        width: 40%;
+        width: 45%;
         display: flex;
         justify-content: space-between;
       }

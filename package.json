@@ -19,6 +19,7 @@
     "vee-validate": "4",
     "vue": "^3.0.0",
     "vue-chart-3": "^3.1.0",
+    "vue-dragscroll": "^3.0.1",
     "vue-i18n": "9",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"

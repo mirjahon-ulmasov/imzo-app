@@ -42,11 +42,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px;
+  padding: 15px 40px 15px 0px;
   background: #fff;
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.03);
 
   .nav-left {
+    padding-left: 40px;
+    border-left: 3px solid #51aafd;
     display: flex;
     align-items: center;
 

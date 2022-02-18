@@ -1,66 +1,81 @@
 <template>
-  <div class="wrapper">
-    <LineChart v-bind="lineChartProps" class="chart" />
+  <div class="scroll">
+    <canvas id="linechart" height="300" width="1500" class="chart"></canvas>
   </div>
 </template>
 
 <script>
-import { LineChart, useLineChart } from "vue-chart-3";
-import { computed } from "@vue/runtime-core";
+import { onMounted } from "vue";
+
 export default {
-  components: { LineChart },
-  setup() {
-    const chartData = computed(() => {
-      const labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-      return {
-        labels: labels,
+  props: {
+    color: {
+      type: String,
+      default: "#369BFF",
+    },
+    backgroundColor: {
+      type: String,
+      default: "#efffff",
+    },
+    labels: {
+      type: Array,
+      default: null,
+    },
+    data: {
+      type: Array,
+      default: null,
+    },
+  },
+  updated() {
+    const chart = document.getElementById("linechart").getContext("2d");
+    const data = {
+      labels: this.$props.labels,
+      datasets: [
+        {
+          fillColor: this.$props.backgroundColor,
+          strokeColor: this.$props.color,
+          pointColor: this.$props.backgroundColor,
+          pointHighlightFill: this.$props.color,
+          data: this.$props.labels.map(() =>
+            Math.floor(Math.random() * (150 - 100 + 1) + 100)
+          ),
+        },
+      ],
+    };
+
+    // eslint-disable-next-line no-undef
+    new Chart(chart).Line(data);
+  },
+  setup(props) {
+    onMounted(() => {
+      const chart = document.getElementById("linechart").getContext("2d");
+      const data = {
+        labels: props.labels,
         datasets: [
           {
-            data: [65, 59, 80, 81, 56, 55, 40],
-            fill: true,
-            tension: 0.4,
-            borderColor: "#369BFF",
-            backgroundColor: "#efffff",
+            fillColor: props.backgroundColor,
+            strokeColor: props.color,
+            pointColor: props.backgroundColor,
+            pointHighlightFill: props.color,
+            data: props.labels.map(() =>
+              Math.floor(Math.random() * (150 - 100 + 1) + 100)
+            ),
           },
         ],
       };
+
+      // eslint-disable-next-line no-undef
+      new Chart(chart).Line(data);
     });
 
-    const { lineChartProps, lineChartRef } = useLineChart({
-      chartData,
-      options: {
-        reponsive: false,
-        maintainAspectRatio: false,
-        tooltips: {
-          enabled: false,
-        },
-        plugins: {
-          title: false,
-          subtitle: false,
-          legend: false,
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false,
-            },
-          },
-          y: {
-            grid: {
-              display: true,
-            },
-          },
-        },
-      },
-    });
-    return { lineChartProps, lineChartRef };
+    return {};
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  overflow-y: scroll;
+.scroll {
+  width: 800px;
 
   .chart {
     margin-top: 1rem;

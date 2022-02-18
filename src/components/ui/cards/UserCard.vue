@@ -1,23 +1,23 @@
 <template>
-    <div class="user-card" v-for="user in users" :key="user.id">
-        <div class="card-header">
-            <img 
-                src="@/assets/images/icons/users-light-blue.svg"
-                class="user-photo"
-                alt="user"
-            />
-            <p>{{user.name}} {{user.surname}}</p>
-        </div>
-       <ul>
-           <li><span>Номер телефона:</span>  {{user.phone_number}}</li>
-           <li><span>Город:</span> {{user.city}}</li>
-           <li><span>Район:</span> {{user.district}}</li>
-           <li><span>Улица:</span> {{user.street}}</li>
-           <li><span>Дом:</span> {{user.house}}</li>
-           <li><span>Пол:</span> {{user.gender}}</li>
-           <li><span>Дата создания:</span> {{user.date}}</li>
-       </ul>
+  <router-link to="/" class="user-card" v-for="user in users" :key="user.id">
+    <div class="card-header">
+      <img
+        src="@/assets/images/icons/users-light-blue.svg"
+        class="user-photo"
+        alt="user"
+      />
+      <p>{{ user.name }} {{ user.surname }}</p>
     </div>
+    <ul>
+      <li><span>Номер телефона:</span> {{ user.phone_number }}</li>
+      <li><span>Город:</span> {{ user.city }}</li>
+      <li><span>Район:</span> {{ user.district }}</li>
+      <li><span>Улица:</span> {{ user.street }}</li>
+      <li><span>Дом:</span> {{ user.house }}</li>
+      <li><span>Пол:</span> {{ user.gender }}</li>
+      <li><span>Дата создания:</span> {{ user.date }}</li>
+    </ul>
+  </router-link>
 </template>
 <script>
 export default {
@@ -148,11 +148,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 .user-card {
+  text-decoration: none;
   margin: 10px;
   padding: 32px;
   max-width: 500px;
-  min-width: 362px;
-  width: 40%;
+  width: 45%;
   height: auto;
   background: #ffffff;
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);

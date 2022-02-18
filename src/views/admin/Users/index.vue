@@ -1,7 +1,17 @@
 <template>
   <div class="nav-bar">
     <h3>Общие сведения</h3>
-    <dropdown></dropdown>
+    <dropdown
+      @input="filterPage"
+      :options="[
+        { title: 'За все время', value: 'all' },
+        { title: 'Неделя', value: 'week' },
+        { title: 'Месяц', value: 'month' },
+        { title: 'Квартал', value: 'quarter' },
+        { title: 'Год', value: 'year' },
+      ]"
+      :default="{ title: 'Месяц', value: 'month' }"
+    ></dropdown>
   </div>
   <div class="main-content">
     <searchbar></searchbar>
@@ -9,29 +19,41 @@
       <p class="header-title">Пользователи: <span>82.000</span></p>
       <div class="filter-block">
         <p>Вид</p>
-        <button @click="showBlock = !showBlock" class="tab-btn">
-          <img :src="
+        <button @click="showBlock = false" class="tab-btn">
+          <img
+            :src="
               require(`@/assets/images/icons/dashboard${
                 showBlock === true ? '-light.svg' : '-bold-blue.svg'
               }`)
             "
-            alt="card">
+            alt="card"
+          />
         </button>
-        <button @click="showBlock = !showBlock" class="tab-btn">
-            <img :src="
+        <button @click="showBlock = true" class="tab-btn">
+          <img
+            :src="
               require(`@/assets/images/icons/icon-park_hamburger-button${
                 showBlock === false ? '-light.svg' : '-bold.svg'
               }`)
             "
-            alt="card">
+            alt="card"
+          />
         </button>
-        <Filter />
+        <dropdown
+          @input="filterPage"
+          :options="[
+            { title: 'Все', value: 'all' },
+            { title: 'Сначала старые', value: 'old' },
+            { title: 'Сначала новые', value: 'new' },
+          ]"
+          :default="{ title: 'Сначала старые', value: 'old' }"
+        ></dropdown>
       </div>
     </div>
     <div v-show="showBlock == false" class="flex-row">
       <UserCard />
     </div>
-    <div v-show="showBlock == true" class="flex-col">
+    <div v-show="showBlock == true" class="flex-col" v-dragscroll.x>
       <UserTable />
     </div>
   </div>
@@ -40,16 +62,18 @@
 <script>
 import UserCard from "@/components/ui/cards/UserCard.vue";
 import UserTable from "@/components/ui/tables/UserTable.vue";
-import Filter from "@/components/helpers/Filter.vue";
 export default {
   data() {
     return {
       showBlock: false,
     };
   },
-  methods: {},
+  methods: {
+    filterPage(val) {
+      console.log(val);
+    },
+  },
   components: {
-    Filter,
     UserCard,
     UserTable,
   },
@@ -124,6 +148,10 @@ export default {
     justify-content: flex-start;
   }
   .flex-col {
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    cursor: -o-grab;
+    cursor: grab;
     margin: 30px 0px 0px 0px;
     width: 100%;
     display: flex;
