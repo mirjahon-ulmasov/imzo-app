@@ -10,6 +10,19 @@ const routes = [
     component: () => import("@/layout/admin/Layout.vue"),
     children: [
       {
+        path: "incoming",
+        name: "Incoming",
+        component: () => import("@/views/admin/Dashboard/Incoming.vue"),
+        meta: {
+          role: "admin",
+          link: "incoming",
+          title: {
+            ru: "Входящие",
+            uz: "Kirish qutisi",
+          },
+        },
+      },
+      {
         path: "dashboard",
         name: "Dashboard",
         component: () => import("@/views/admin/Dashboard/index.vue"),

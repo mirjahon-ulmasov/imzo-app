@@ -2,8 +2,7 @@
   <div class="dropdown" @blur="isOpen = false">
     <div class="dropdown-input" @click="isOpen = !isOpen">
       {{ selected.title }}
-      <div class="triangle-down" v-if="!isOpen" />
-      <div class="triangle-up" v-else />
+      <div :class="isOpen ? 'triangle-down' : 'triangle-up'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
       <ul>
@@ -69,7 +68,9 @@ export default {
   .dropdown-input {
     display: flex;
     align-items: center;
-    padding: 4px 40px;
+    justify-content: center;
+    width: 190px;
+    height: 30px;
     background: #ebf5ff;
     border-radius: 10px;
     font-size: 16px;
@@ -94,12 +95,14 @@ export default {
       border-top: 7px solid #51aafd;
     }
   }
-
+  .active {
+    border: 1px solid #51aafd;
+  }
   .dropdown-content {
     position: absolute;
     top: 2.5rem;
-    left: -4px;
-    width: 170px;
+    left: 0px;
+    width: 190px;
     background: #fff;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
