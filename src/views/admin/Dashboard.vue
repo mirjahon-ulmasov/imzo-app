@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import InfoCard from "@/components/ui/InfoCard.vue";
+import InfoCard from "@/components/ui/cards/InfoCard.vue";
 import DoughnutChart from "@/components/charts/Doughnut.vue";
 import LineGraph from "@/components/charts/LineGraph.vue";
 export default {

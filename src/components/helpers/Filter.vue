@@ -1,16 +1,14 @@
 <template>
   <div class="dropdown">
-    <div :class="isOpen?'dropdown-input active':'dropdown-input'" @click="isOpen = !isOpen">
-      Месяц
+    <div class="dropdown-input" @click="isOpen = !isOpen">
+      Сначала старые
       <div :class="isOpen?'triangle-down':'triangle-up'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
       <ul>
-        <li>За все время</li>
-        <li>Неделя</li>
-        <li>Месяц</li>
-        <li>Квартал</li>
-        <li>Год</li>
+        <li>Все</li>
+        <li>Сначала старые</li>
+        <li>Сначала новые</li>
       </ul>
     </div>
   </div>
@@ -35,9 +33,7 @@ export default {
   .dropdown-input {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 170px;
-    height: 30px;
+    padding: 8px 16px;
     background: #ebf5ff;
     border-radius: 10px;
     font-size: 16px;
@@ -62,18 +58,16 @@ export default {
       border-top: 7px solid #51aafd;
     }
   }
-  .active {
-    border: 1px solid #51aafd;
-  }
+
   .dropdown-content {
     position: absolute;
-    top: 2.5rem;
+    top: 3rem;
     left: 0px;
-    width: 170px;
+    width: 185px;
     background: #fff;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    padding: 10px 15px;
+    padding: 10px 13px;
     z-index: 10;
 
     ul {
