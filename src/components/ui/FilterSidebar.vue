@@ -1,8 +1,11 @@
 <template>
-  <img @click="sideBar = !sideBar" class="sidebar-btn" src="~@/assets/images/icons/sidebar-icon.svg" alt="">
-  <div @click="sideBar = !sideBar" v-if="sideBar == true" class="Sidebar">
-      
-  </div>
+  <img
+    @click="sideBar = !sideBar"
+    class="sidebar-btn"
+    src="~@/assets/images/icons/sidebar-icon.svg"
+    alt=""
+  />
+  <div @click="sideBar = !sideBar" v-if="sideBar == true" class="Sidebar"></div>
 </template>
 
 <script>
@@ -25,12 +28,12 @@ export default {
   float: right;
 }
 .Sidebar {
-  background: #ffffff;
+  background: red;
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
+  border-radius: 0;
   top: 0;
   right: 0;
-  position: absolute;
+  position: fixed;
   width: 420px;
   height: 100%;
   padding: 0px 32px;

@@ -33,6 +33,7 @@ export default {
     height: 100vh;
 
     .scroll {
+      position: relative;
       padding: 34px;
       height: 87vh;
       background-color: #e2f1ff27;
