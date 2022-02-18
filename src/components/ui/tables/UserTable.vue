@@ -1,28 +1,28 @@
 <template>
-    <div class="user-table">
-        <div class="table-row">
-            <p>Имя</p>
-            <p>Фамилия</p>
-            <p>Номер телефона</p>
-            <p>Город</p>
-            <p>Район</p>
-            <p>Улица</p>
-            <p>Дом</p>
-            <p>Пол</p>
-            <p>Дата создания</p>
-        </div>
-        <div class="table-row" v-for="user in users" :key="user.id">
-            <p>{{user.name}}</p>
-            <p>{{user.surname}}</p>
-            <p>{{user.phone_number}}</p>
-            <p>{{user.city}}</p>
-            <p>{{user.district}}</p>
-            <p>{{user.street}}</p>
-            <p>{{user.house}}</p>
-            <p>{{user.gender}}</p>
-            <p>{{user.date}}</p>
-        </div>
+  <div class="user-table">
+    <div class="table-row">
+      <p>Имя</p>
+      <p>Фамилия</p>
+      <p>Номер телефона</p>
+      <p>Город</p>
+      <p>Район</p>
+      <p>Улица</p>
+      <p>Дом</p>
+      <p>Пол</p>
+      <p>Дата создания</p>
     </div>
+    <router-link to="/" class="table-row" v-for="user in users" :key="user.id">
+      <p>{{ user.name }}</p>
+      <p>{{ user.surname }}</p>
+      <p>{{ user.phone_number }}</p>
+      <p>{{ user.city }}</p>
+      <p>{{ user.district }}</p>
+      <p>{{ user.street }}</p>
+      <p>{{ user.house }}</p>
+      <p>{{ user.gender }}</p>
+      <p>{{ user.date }}</p>
+    </router-link>
+  </div>
 </template>
 <script>
 export default {
@@ -161,6 +161,7 @@ export default {
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
   border-radius: 20px;
   .table-row {
+    text-decoration: none;
     width: 100%;
     padding: 24px;
     margin: 8px 0px;

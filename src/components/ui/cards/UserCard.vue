@@ -1,5 +1,5 @@
 <template>
-  <div class="user-card" v-for="user in users" :key="user.id">
+  <router-link to="/" class="user-card" v-for="user in users" :key="user.id">
     <div class="card-header">
       <img
         src="@/assets/images/icons/users-light-blue.svg"
@@ -17,7 +17,7 @@
       <li><span>Пол:</span> {{ user.gender }}</li>
       <li><span>Дата создания:</span> {{ user.date }}</li>
     </ul>
-  </div>
+  </router-link>
 </template>
 <script>
 export default {
@@ -148,6 +148,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .user-card {
+  text-decoration: none;
   margin: 10px;
   padding: 32px;
   max-width: 500px;

@@ -18,7 +18,7 @@
       <p class="header-title">Пользователи: <span>82.000</span></p>
       <div class="filter-block">
         <p>Вид</p>
-        <button @click="showBlock = !showBlock" class="tab-btn">
+        <button @click="showBlock = false" class="tab-btn">
           <img
             :src="
               require(`@/assets/images/icons/dashboard${
@@ -28,7 +28,7 @@
             alt="card"
           />
         </button>
-        <button @click="showBlock = !showBlock" class="tab-btn">
+        <button @click="showBlock = true" class="tab-btn">
           <img
             :src="
               require(`@/assets/images/icons/icon-park_hamburger-button${
@@ -52,7 +52,7 @@
     <div v-show="showBlock == false" class="flex-row">
       <UserCard />
     </div>
-    <div v-show="showBlock == true" class="flex-col">
+    <div v-show="showBlock == true" class="flex-col" v-dragscroll.x>
       <UserTable />
     </div>
   </div>
@@ -155,6 +155,10 @@ export default {
     justify-content: flex-start;
   }
   .flex-col {
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    cursor: -o-grab;
+    cursor: grab;
     margin: 30px 0px 0px 0px;
     width: 100%;
     display: flex;
