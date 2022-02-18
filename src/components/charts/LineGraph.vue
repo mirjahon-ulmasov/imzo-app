@@ -1,6 +1,6 @@
 <template>
   <div class="scroll">
-    <canvas id="linechart" height="300" width="1500" class="chart"></canvas>
+    <canvas id="linechart" height="300" class="chart"></canvas>
   </div>
 </template>
 
@@ -75,10 +75,11 @@ export default {
 
 <style lang="scss" scoped>
 .scroll {
-  width: 800px;
+  width: 100%;
 
   .chart {
     margin-top: 1rem;
+    width: 250%;
     height: 350px;
     z-index: 1;
   }

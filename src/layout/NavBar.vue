@@ -3,12 +3,23 @@
     <div class="nav-left">
       <h3>{{ title }}</h3>
       <img
-        :src="require(`@/assets/images/icons/${link}-bold-blue.svg`)"
+        :src="
+          require(`@/assets/images/icons/${
+            link === 'inbox'
+              ? 'notifications-bold-blue.svg'
+              : link.concat('-bold-blue.svg')
+          }`)
+        "
         alt="icon"
       />
     </div>
     <div class="nav-right">
-      <img src="@/assets/images/icons/notifications-new.svg" alt="notif" />
+      <img
+        v-if="link !== 'inbox'"
+        src="@/assets/images/icons/notifications-new.svg"
+        alt="notif"
+        @click="router.push('/inbox')"
+      />
       <img
         src="@/assets/images/icons/users-light-blue.svg"
         class="user-img"
@@ -24,15 +35,16 @@
 
 <script>
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
   props: ["title"],
   setup() {
     const route = useRoute();
-
+    const router = useRouter();
     const link = computed(() => route.meta.link);
-    return { link };
+
+    return { link, router };
   },
 };
 </script>
@@ -65,6 +77,10 @@ export default {
   .nav-right {
     display: flex;
     align-items: center;
+
+    img {
+      cursor: pointer;
+    }
 
     .user-img {
       padding: 13px;

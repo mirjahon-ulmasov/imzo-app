@@ -1,17 +1,16 @@
 <template>
   <div class="nav-bar">
     <h3>Общие сведения</h3>
-    <dropdown
-      @input="filterPage"
-      :options="[
-        { title: 'За все время', value: 'all' },
-        { title: 'Неделя', value: 'week' },
-        { title: 'Месяц', value: 'month' },
-        { title: 'Квартал', value: 'quarter' },
-        { title: 'Год', value: 'year' },
-      ]"
-      :default="{ title: 'Месяц', value: 'month' }"
-    ></dropdown>
+    <div class="dates">
+      <datepicker
+        :date="startDate"
+        @getDate="val => (startDate = val)"
+      ></datepicker>
+      <datepicker
+        :date="endDate"
+        @getDate="val => (endDate = val)"
+      ></datepicker>
+    </div>
   </div>
   <div class="main-content">
     <p>Количество посещений: <span>1.900.000</span></p>
@@ -112,17 +111,16 @@
             ]"
             :default="{ title: 'Товар', value: 'product' }"
           ></dropdown>
-          <dropdown
-            @input="filterChart"
-            :options="[
-              { title: 'За все время', value: 'all' },
-              { title: 'Неделя', value: 'week' },
-              { title: 'Месяц', value: 'month' },
-              { title: 'Квартал', value: 'quarter' },
-              { title: 'Год', value: 'year' },
-            ]"
-            :default="{ title: 'Месяц', value: 'month' }"
-          ></dropdown>
+          <div class="dates">
+            <datepicker
+              :date="startDateChart"
+              @getDate="val => (startDateChart = val)"
+            ></datepicker>
+            <datepicker
+              :date="endDateChart"
+              @getDate="val => (endDateChart = val)"
+            ></datepicker>
+          </div>
         </div>
       </div>
       <LineGraph
@@ -138,17 +136,40 @@
 import InfoCard from "@/components/ui/cards/InfoCard.vue";
 import DoughnutChart from "@/components/charts/Doughnut.vue";
 import LineGraph from "@/components/charts/LineGraph.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
+import moment from "moment";
+
 export default {
   components: { InfoCard, DoughnutChart, LineGraph },
   setup() {
-    const filterPage = val => {
-      console.log(val);
-    };
+    // ------------------ DatePicker ------------------
+    const startDate = ref(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+    const endDate = ref(new Date());
+
+    watchEffect(() => {
+      const start = moment(startDate.value).format("YYYY-MM-DD");
+      const end = moment(endDate.value).format("YYYY-MM-DD");
+      console.log("start:", start);
+      console.log("end:", end);
+    });
 
     // ------------------ Line Chart data ------------------
+    // dates
+    const startDateChart = ref(
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+    );
+    const endDateChart = ref(new Date());
+
+    // colors
     const stroke = ref("#369BFF");
     const fill = ref("#efffff");
+
+    watchEffect(() => {
+      const start = moment(startDateChart.value).format("YYYY-MM-DD");
+      const end = moment(startDateChart.value).format("YYYY-MM-DD");
+      console.log("start:", start);
+      console.log("end:", end);
+    });
 
     const daysInMonth = computed(() => {
       return new Array(
@@ -178,7 +199,16 @@ export default {
           : "#efffff";
       console.log(val);
     };
-    return { daysInMonth, filterChart, filterPage, stroke, fill };
+    return {
+      daysInMonth,
+      filterChart,
+      stroke,
+      fill,
+      startDate,
+      endDate,
+      startDateChart,
+      endDateChart,
+    };
   },
 };
 </script>
@@ -201,6 +231,14 @@ export default {
     font-weight: 600;
     font-size: 22px;
     color: #383838;
+  }
+
+  .dates {
+    width: 40%;
+    display: flex;
+    * {
+      margin-left: 1rem;
+    }
   }
 }
 
@@ -305,9 +343,18 @@ export default {
       }
 
       .actions {
-        width: 45%;
+        width: 60%;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+
+        .dates {
+          display: flex;
+
+          * {
+            margin-left: 1rem;
+          }
+        }
       }
     }
   }

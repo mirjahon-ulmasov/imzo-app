@@ -1,17 +1,16 @@
 <template>
   <div class="nav-bar">
     <h3>Общие сведения</h3>
-    <dropdown
-      @input="filterPage"
-      :options="[
-        { title: 'За все время', value: 'all' },
-        { title: 'Неделя', value: 'week' },
-        { title: 'Месяц', value: 'month' },
-        { title: 'Квартал', value: 'quarter' },
-        { title: 'Год', value: 'year' },
-      ]"
-      :default="{ title: 'Месяц', value: 'month' }"
-    ></dropdown>
+    <div class="dates">
+      <datepicker
+        :date="startDate"
+        @getDate="val => (startDate = val)"
+      ></datepicker>
+      <datepicker
+        :date="endDate"
+        @getDate="val => (endDate = val)"
+      ></datepicker>
+    </div>
   </div>
   <div class="main-content">
     <searchbar></searchbar>
@@ -98,6 +97,14 @@ export default {
     font-weight: 600;
     font-size: 22px;
     color: #383838;
+  }
+
+  .dates {
+    width: 40%;
+    display: flex;
+    * {
+      margin-left: 1rem;
+    }
   }
 }
 .main-content {

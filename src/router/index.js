@@ -10,12 +10,12 @@ const routes = [
     component: () => import("@/layout/admin/Layout.vue"),
     children: [
       {
-        path: "incoming",
-        name: "Incoming",
-        component: () => import("@/views/admin/Dashboard/Incoming.vue"),
+        path: "inbox",
+        name: "Inbox",
+        component: () => import("@/views/admin/Dashboard/Inbox.vue"),
         meta: {
           role: "admin",
-          link: "incoming",
+          link: "inbox",
           title: {
             ru: "Входящие",
             uz: "Kirish qutisi",

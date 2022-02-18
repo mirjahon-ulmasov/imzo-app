@@ -64,6 +64,9 @@ export default {
         title: false,
         subtitle: false,
         legend: false,
+        tooltip: {
+          enabled: false,
+        },
       },
     }));
 
