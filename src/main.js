@@ -1,6 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { dragscrollNext } from "vue-dragscroll";
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 import router from "./router";
 import store from "./store";
 import NavBar from "./layout/NavBar.vue";
@@ -13,18 +15,14 @@ import "./assets/css/main.css";
 import "./assets/scss/main.scss";
 
 const app = createApp(App);
-
+app.use(VueAxios, axios)
 // global components
 app
   .component("nav-bar", NavBar)
   .component("dropdown", Dropdown)
-<<<<<<< HEAD
   .component("searchbar", Searchbar)
   .component("datepicker", Datepicker);
 
-=======
-  .component("searchbar", Searchbar);
 app.directive("dragscroll", dragscrollNext);
->>>>>>> 37ff35a620f7371607af9b4ae77402bf19fa468f
 app.use(store).use(router);
 app.mount("#app");

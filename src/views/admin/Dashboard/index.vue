@@ -236,6 +236,7 @@ export default {
   .dates {
     width: 40%;
     display: flex;
+    justify-content: flex-end;
     * {
       margin-left: 1rem;
     }
@@ -350,7 +351,7 @@ export default {
 
         .dates {
           display: flex;
-
+          justify-content: flex-end;
           * {
             margin-left: 1rem;
           }
