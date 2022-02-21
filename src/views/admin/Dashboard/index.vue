@@ -138,6 +138,7 @@ import DoughnutChart from "@/components/charts/Doughnut.vue";
 import LineGraph from "@/components/charts/LineGraph.vue";
 import { computed, ref, watchEffect } from "vue";
 import moment from "moment";
+import axios from "@/services/api";
 
 export default {
   components: { InfoCard, DoughnutChart, LineGraph },
@@ -151,6 +152,12 @@ export default {
       const end = moment(endDate.value).format("YYYY-MM-DD");
       console.log("start:", start);
       console.log("end:", end);
+      axios
+        .get(`main/statistics?start=${start}&end=${end}`)
+        .then(res => res.data)
+        .then(data => {
+          console.log(data);
+        });
     });
 
     // ------------------ Line Chart data ------------------
@@ -175,7 +182,7 @@ export default {
       return new Array(
         new Date(
           new Date().getFullYear(),
-          new Date().getMonth() + 2,
+          new Date().getMonth() + 1,
           0
         ).getDate()
       )

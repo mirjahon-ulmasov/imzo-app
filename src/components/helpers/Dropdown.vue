@@ -70,9 +70,9 @@ export default {
     align-items: center;
     justify-content: center;
     width: 180px;
-    height: 30px;
+    height: 35px;
     background: #ebf5ff;
-    border-radius: 10px;
+    border-radius: 5px;
     font-size: 16px;
     color: #51aafd;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
@@ -100,7 +100,7 @@ export default {
   }
   .dropdown-content {
     position: absolute;
-    top: 2.5rem;
+    top: 45px;
     left: -5px;
     width: 190px;
     background: #fff;
