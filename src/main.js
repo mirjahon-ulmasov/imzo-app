@@ -1,6 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { dragscrollNext } from "vue-dragscroll";
+import axios from "axios";
+import VueAxios from "vue-axios";
 import router from "./router";
 import store from "./store";
 import NavBar from "./layout/NavBar.vue";
@@ -14,7 +16,7 @@ import "./assets/css/main.css";
 import "./assets/scss/main.scss";
 
 const app = createApp(App);
-
+app.use(VueAxios, axios);
 // global components
 app
   .component("notification", Notification)
