@@ -51,7 +51,6 @@
 import OrderCard from "@/components/ui/cards/OrderCard.vue";
 import FilterSidebar from "@/components/ui/FilterSidebar.vue";
 import OrderTable from "@/components/ui/tables/OrderTable.vue";
-import axios from "axios";
 export default {
   data() {
     return {
@@ -63,11 +62,6 @@ export default {
     FilterSidebar,
     OrderTable,
     OrderCard,
-  },
-  mounted() {
-    axios
-      .get("http://app.imzo.uz/api/v1/products")
-      .then(response => ((this.info = response.data), console.log(this.info)));
   },
 };
 </script>
