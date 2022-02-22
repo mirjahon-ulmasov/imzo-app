@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="main-content">
+    <form @submit.prevent="login()" class="main-content">
       <img class="logo" src="~@/assets/images/logo.png" alt="Logo" />
       <label class="custom-label" for="">Номер телефона:</label>
       <div class="custom-input">
@@ -27,7 +27,7 @@
         <a class="forget-password-btn" href="">Забыл пароль?</a>
       </div>
       <button type="submit">Войти</button>
-    </div>
+    </form>
   </div>
 </template>
 
@@ -49,6 +49,15 @@ export default {
         this.type = "password";
       }
     },
+    async login() {
+      let phone_number = this.phone_number;
+      let password = this.password;
+      let remember_me = this.remember_me;
+      this.$store.dispatch("auth", { phone_number, password, remember_me });
+    },
+  },
+  mounted() {
+    console.log(this.$store);
   },
 };
 </script>
@@ -139,6 +148,7 @@ export default {
         display: flex;
         flex-flow: row;
         cursor: pointer;
+
         input[type="checkbox"] {
           display: none;
           position: absolute;

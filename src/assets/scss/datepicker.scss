@@ -3,12 +3,14 @@
 }
 
 .dp-custom-input {
-  width: 10rem;
   font-size: 16px;
   color: #51aafd;
   border: none;
+  width: 10rem;
+  height: 35px;
   border-radius: 5px;
   background: #ebf5ff;
+  letter-spacing: 0.5px;
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
 
   &:hover {

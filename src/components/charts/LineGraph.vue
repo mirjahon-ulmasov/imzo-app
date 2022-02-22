@@ -79,7 +79,7 @@ export default {
 
   .chart {
     margin-top: 1rem;
-    width: 250%;
+    width: 550%;
     height: 350px;
     z-index: 1;
   }
