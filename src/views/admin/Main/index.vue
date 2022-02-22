@@ -38,43 +38,43 @@
       </button>
     </div>
 
-    <div class="welcome" v-if="isActiveTab('welcome')">
+    <div class="welcome" v-if="isActiveTab('welcome') && getWelcome">
       <div class="left">
         <h3>Текст приветствия</h3>
         <form @submit.prevent="submitWelcome">
           <div v-show="isActiveLang('ru')">
             <div class="input-form">
-              <h4>Добро пожаловать, Дмитрий 👋</h4>
+              <h4>Заголовок</h4>
               <input
                 type="text"
-                v-model="welcome.header_ru"
-                placeholder="Добро пожаловать, Дмитрий 👋"
+                v-model="welcome.title_ru"
+                :placeholder="getWelcome.title_ru"
               />
             </div>
             <div class="input-form">
-              <h4>Постройте лучшее будущее совместно с нами!</h4>
+              <h4>Подзаголовок</h4>
               <input
                 type="text"
-                v-model="welcome.content_ru"
-                placeholder="Постройте лучшее будущее совместно с нами!"
+                v-model="welcome.text_ru"
+                :placeholder="getWelcome.text_ru"
               />
             </div>
           </div>
           <div v-show="isActiveLang('uz')">
             <div class="input-form">
-              <h4>Xush kelibsiz Dmitriy 👋</h4>
+              <h4>Sarlavha</h4>
               <input
                 type="text"
-                v-model="welcome.header_uz"
-                placeholder="Xush kelibsiz Dmitriy 👋"
+                v-model="welcome.title_uz"
+                :placeholder="getWelcome.title_uz"
               />
             </div>
             <div class="input-form">
-              <h4>Biz bilan yaxshi kelajakni quring!</h4>
+              <h4>Subtitr</h4>
               <input
                 type="text"
-                v-model="welcome.content_uz"
-                placeholder="Biz bilan yaxshi kelajakni quring!"
+                v-model="welcome.text_uz"
+                :placeholder="getWelcome.text_uz"
               />
             </div>
           </div>
@@ -87,28 +87,8 @@
         <div class="sample">
           <h4>Пример <span>LIVE</span></h4>
           <div class="content">
-            <h4>
-              {{
-                activeLang === "ru"
-                  ? welcome.header_ru !== ""
-                    ? welcome.header_ru
-                    : "Добро пожаловать, Дмитрий 👋"
-                  : welcome.header_uz !== ""
-                  ? welcome.header_uz
-                  : "Xush kelibsiz Dmitriy 👋"
-              }}
-            </h4>
-            <p>
-              {{
-                activeLang === "ru"
-                  ? welcome.content_ru !== ""
-                    ? welcome.content_ru
-                    : "Постройте лучшее будущее совместно с нами!"
-                  : welcome.content_uz !== ""
-                  ? welcome.content_uz
-                  : "Biz bilan yaxshi kelajakni quring!"
-              }}
-            </p>
+            <h4>{{ bannerHeader }}</h4>
+            <p>{{ bannerContent }}</p>
           </div>
         </div>
       </div>
@@ -133,9 +113,8 @@
               banners.push({
                 img: '',
                 text_ru: '',
-                link_ru: '',
                 text_uz: '',
-                link_uz: '',
+                link: '',
               })
             "
           >
@@ -166,7 +145,7 @@
               <input
                 type="text"
                 placeholder="Введите"
-                v-model="banners[activeIndex].link_ru"
+                v-model="banners[activeIndex].link"
               />
             </div>
           </div>
@@ -184,7 +163,7 @@
               <input
                 type="text"
                 placeholder="Kiriting"
-                v-model="banners[activeIndex].link_uz"
+                v-model="banners[activeIndex].link"
               />
             </div>
           </div>
@@ -223,9 +202,11 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
 export default {
   setup() {
+    const store = useStore();
     const activeTab = ref("welcome");
     const activeLang = ref("ru");
 
@@ -235,19 +216,57 @@ export default {
     const setActiveLang = item => (activeLang.value = item);
     const isActiveLang = item => activeLang.value === item;
 
+    onMounted(() => {
+      store.dispatch("fetchWelcomeText");
+    });
+
     // -------------- Welcom Tab --------------
     const welcome = reactive({
-      header_ru: "",
-      content_ru: "",
-      header_uz: "",
-      content_uz: "",
+      title_uz: "",
+      title_ru: "",
+      text_uz: "",
+      text_ru: "",
     });
 
     const submitWelcome = () => {
-      console.log(welcome);
-      notification.isShow = true;
-      notification.isSuccess = true;
+      store
+        .dispatch("createWelcomeText", welcome)
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            notification.isShow = true;
+            notification.isSuccess = true;
+          }
+        })
+        .catch(err => {
+          if (!err.response.data.success) {
+            notification.isShow = true;
+            notification.isSuccess = false;
+          }
+        });
     };
+
+    const getWelcome = computed(() => store.getters.getWelcome);
+
+    const bannerHeader = computed(() =>
+      activeLang.value === "ru"
+        ? welcome.title_ru !== ""
+          ? welcome.title_ru
+          : getWelcome.value.title_ru
+        : welcome.title_uz !== ""
+        ? welcome.title_uz
+        : getWelcome.value.title_uz
+    );
+
+    const bannerContent = computed(() =>
+      activeLang.value === "ru"
+        ? welcome.text_ru !== ""
+          ? welcome.text_ru
+          : getWelcome.value.text_ru
+        : welcome.text_uz !== ""
+        ? welcome.text_uz
+        : getWelcome.value.text_uz
+    );
 
     // -------------- Banner Tab --------------
     const activeIndex = ref(0);
@@ -258,9 +277,8 @@ export default {
       {
         img: "",
         text_ru: "",
-        link_ru: "",
         text_uz: "",
-        link_uz: "",
+        link: "",
       },
     ]);
 
@@ -288,6 +306,9 @@ export default {
       activeLang,
       submitWelcome,
       welcome,
+      getWelcome,
+      bannerHeader,
+      bannerContent,
       cancelHandler,
       notification,
       banners,
@@ -341,7 +362,7 @@ export default {
 
           h4 {
             font-weight: 500;
-            font-size: 18px;
+            font-size: 20px;
             color: #383838;
             margin-bottom: 1rem;
           }

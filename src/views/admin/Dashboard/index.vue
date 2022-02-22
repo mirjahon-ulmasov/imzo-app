@@ -12,41 +12,43 @@
       ></datepicker>
     </div>
   </div>
-  <div class="main-content">
+  <div class="main-content" v-if="statistics">
     <p>Количество посещений: <span>1.900.000</span></p>
     <div class="info">
       <InfoCard
         title="Заявка на товар"
         :imgUrl="require('@/assets/images/icons/products-bold-blue.svg')"
         imgClass="blue"
-        :count="185"
+        :count="statistics.product_order"
       />
       <InfoCard
         title="Заявки на замер"
         :imgUrl="require('@/assets/images/icons/requests-bold-yellow.svg')"
         imgClass="yellow"
-        :count="192"
+        :count="statistics.measurement"
       />
       <InfoCard
         title="Отзывы"
         :imgUrl="require('@/assets/images/icons/feedback-bold-yellow.svg')"
         imgClass="yellow"
-        :count="132"
+        :count="statistics.rate"
       />
     </div>
     <div class="cards">
       <div class="card">
         <h4>Пользователи</h4>
-        <p>Количество пользователей: <span>192.000</span></p>
+        <p>
+          Количество пользователей: <span>{{ statistics.total_users }}</span>
+        </p>
         <div class="charts">
           <DoughnutChart
-            :value="73.4"
+            :value="statistics.guest_users_percent"
             backgroundColor="#51aafd"
             hoverBackgroundColor="#4490d6"
             :rotation="90"
           />
           <DoughnutChart
-            :value="46.6"
+            :value="statistics.registered_users_percent"
             backgroundColor="#4ed143"
             hoverBackgroundColor="#57af4f"
           />
@@ -55,30 +57,33 @@
           class="statistics"
           style="--color: linear-gradient(180deg, #50a9fc 0%, #2e7fcb 100%)"
         >
-          <span>110.000</span>
+          <span>{{ statistics.guest_users }}</span>
           гостей
         </p>
         <p
           class="statistics"
           style="--color: linear-gradient(180deg, #4dd043 0%, #34ad2b 100%)"
         >
-          <span>82.000</span>
+          <span>{{ statistics.registered_users }}</span>
           зарегистрированных
         </p>
       </div>
 
       <div class="card">
         <h4>М/Ж</h4>
-        <p>Количество зарегистрированных: <span>82.000</span></p>
+        <p>
+          Количество зарегистрированных:
+          <span>{{ statistics.registered_users }}</span>
+        </p>
         <div class="charts">
           <DoughnutChart
-            :value="40"
+            :value="Math.round(statistics.female_users_percent)"
             backgroundColor="#fea6e0"
             hoverBackgroundColor="#d389ba"
             :rotation="90"
           />
           <DoughnutChart
-            :value="60"
+            :value="Math.round(statistics.male_users_percent)"
             backgroundColor="#51aafd"
             hoverBackgroundColor="#4490d6"
           />
@@ -87,13 +92,13 @@
           class="statistics"
           style="--color: linear-gradient(180deg, #fca3dd 0%, #e24fb1 100%)"
         >
-          <span>30.000 пользователей</span> - женщины
+          <span>{{ statistics.female_users }} пользователей</span> - женщины
         </p>
         <p
           class="statistics"
           style="--color: linear-gradient(180deg, #50a9fc 0%, #2a7dca 100%)"
         >
-          <span>52.000 пользователей</span> - мужчины
+          <span>{{ statistics.male_users }} пользователей</span> - мужчины
         </p>
       </div>
     </div>
@@ -138,11 +143,12 @@ import DoughnutChart from "@/components/charts/Doughnut.vue";
 import LineGraph from "@/components/charts/LineGraph.vue";
 import { computed, ref, watchEffect } from "vue";
 import moment from "moment";
-import axios from "@/services/api";
+import { useStore } from "vuex";
 
 export default {
   components: { InfoCard, DoughnutChart, LineGraph },
   setup() {
+    const store = useStore();
     // ------------------ DatePicker ------------------
     const startDate = ref(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
     const endDate = ref(new Date());
@@ -150,15 +156,11 @@ export default {
     watchEffect(() => {
       const start = moment(startDate.value).format("YYYY-MM-DD");
       const end = moment(endDate.value).format("YYYY-MM-DD");
-      console.log("start:", start);
-      console.log("end:", end);
-      axios
-        .get(`main/statistics?start=${start}&end=${end}`)
-        .then(res => res.data)
-        .then(data => {
-          console.log(data);
-        });
+
+      store.dispatch("fetchStatistics", { start, end });
     });
+
+    const statistics = computed(() => store.getters.getStatistics);
 
     // ------------------ Line Chart data ------------------
     // dates
@@ -215,6 +217,7 @@ export default {
       endDate,
       startDateChart,
       endDateChart,
+      statistics,
     };
   },
 };
