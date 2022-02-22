@@ -38,7 +38,7 @@
       </button>
     </div>
 
-    <div class="welcome" v-if="isActiveTab('welcome') && getWelcome">
+    <div class="welcome" v-if="isActiveTab('welcome')">
       <div class="left">
         <h3>Текст приветствия</h3>
         <form @submit.prevent="submitWelcome">
@@ -87,8 +87,8 @@
         <div class="sample">
           <h4>Пример <span>LIVE</span></h4>
           <div class="content">
-            <h4>{{ bannerHeader }}</h4>
-            <p>{{ bannerContent }}</p>
+            <h4>{{ welcomeHeader }}</h4>
+            <p>{{ welcomeContent }}</p>
           </div>
         </div>
       </div>
@@ -127,45 +127,50 @@
         <form @submit.prevent="submitBanner">
           <div class="input-form">
             <h4>Добавить изображение</h4>
-            <div class="image-input">
-              <img src="@/assets/images/icons/camera.svg" alt="camera" />
+            <div
+              class="image-input"
+              :style="{
+                background: `linear-gradient(
+                6.93deg,
+                rgba(255, 255, 255, 0.507) 25%,
+                rgba(255, 255, 255, 0.397) 100%
+              ),
+              url(${
+                imgPreview
+                  ? imgPreview
+                  : require('../../../assets/images/icons/banner-1.png')
+              })`,
+              }"
+            >
+              <label>
+                <img src="@/assets/images/icons/camera.svg" alt="camera" />
+                <FileUpload @fileInput="fileInputHandler" />
+              </label>
             </div>
           </div>
-          <div v-show="isActiveLang('ru')">
-            <div class="input-form">
-              <h4>Текст заголовка</h4>
-              <input
-                type="text"
-                placeholder="Акция Engelberg 7000"
-                v-model="banners[activeIndex].text_ru"
-              />
-            </div>
-            <div class="input-form">
-              <h4>Ссылка</h4>
-              <input
-                type="text"
-                placeholder="Введите"
-                v-model="banners[activeIndex].link"
-              />
-            </div>
+          <div class="input-form" v-show="isActiveLang('ru')">
+            <h4>Текст заголовка</h4>
+            <input
+              type="text"
+              placeholder="Акция Engelberg 7000"
+              v-model="banners[activeIndex].text_ru"
+            />
           </div>
-          <div v-show="isActiveLang('uz')">
-            <div class="input-form">
-              <h4>Sarlavha matni</h4>
-              <input
-                type="text"
-                placeholder="Engelberg 7000 aksiyasi"
-                v-model="banners[activeIndex].text_uz"
-              />
-            </div>
-            <div class="input-form">
-              <h4>Havola</h4>
-              <input
-                type="text"
-                placeholder="Kiriting"
-                v-model="banners[activeIndex].link"
-              />
-            </div>
+          <div class="input-form" v-show="isActiveLang('uz')">
+            <h4>Sarlavha matni</h4>
+            <input
+              type="text"
+              placeholder="Engelberg 7000 aksiyasi"
+              v-model="banners[activeIndex].text_uz"
+            />
+          </div>
+          <div class="input-form">
+            <h4>Ссылка</h4>
+            <input
+              type="text"
+              placeholder="Введите"
+              v-model="banners[activeIndex].link"
+            />
           </div>
           <div class="actions">
             <button type="submit" class="active">Сохранить</button>
@@ -175,7 +180,17 @@
       <div class="right">
         <div class="sample">
           <h4>Пример <span>LIVE</span></h4>
-          <div class="content">
+          <div
+            class="content"
+            :style="{
+              background: `linear-gradient(6.93deg, rgba(0, 0, 0, 0.2) 25.44%, rgba(0, 0, 0, 0) 107.17%),
+            url(${
+              imgPreview
+                ? imgPreview
+                : require('../../../assets/images/icons/banner-1.png')
+            })`,
+            }"
+          >
             <p>
               {{
                 activeLang === "ru"
@@ -203,8 +218,10 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from "vue";
+import FileUpload from "@/components/helpers/FileUpload.vue";
 import { useStore } from "vuex";
 export default {
+  components: { FileUpload },
   setup() {
     const store = useStore();
     const activeTab = ref("welcome");
@@ -248,7 +265,7 @@ export default {
 
     const getWelcome = computed(() => store.getters.getWelcome);
 
-    const bannerHeader = computed(() =>
+    const welcomeHeader = computed(() =>
       activeLang.value === "ru"
         ? welcome.title_ru !== ""
           ? welcome.title_ru
@@ -258,7 +275,7 @@ export default {
         : getWelcome.value.title_uz
     );
 
-    const bannerContent = computed(() =>
+    const welcomeContent = computed(() =>
       activeLang.value === "ru"
         ? welcome.text_ru !== ""
           ? welcome.text_ru
@@ -281,6 +298,13 @@ export default {
         link: "",
       },
     ]);
+
+    const imgPreview = ref("");
+
+    const fileInputHandler = ({ file, filePreview }) => {
+      banners[activeIndex.value].img = file;
+      imgPreview.value = filePreview;
+    };
 
     const submitBanner = () => {
       console.log(banners[activeIndex.value]);
@@ -307,11 +331,13 @@ export default {
       submitWelcome,
       welcome,
       getWelcome,
-      bannerHeader,
-      bannerContent,
+      welcomeHeader,
+      welcomeContent,
+      fileInputHandler,
       cancelHandler,
       notification,
       banners,
+      imgPreview,
       activeIndex,
       setActiveIndex,
       isActiveIndex,
@@ -334,7 +360,7 @@ export default {
 
     button {
       padding: 13px 24px;
-      margin-right: 24px;
+      margin: 0 24px 15px 0;
       border: none;
       font-size: 18px;
       color: #383838;
@@ -469,12 +495,9 @@ export default {
             width: 300px;
             height: 170px;
             border-radius: 20px;
-            background: linear-gradient(
-                6.93deg,
-                rgba(255, 255, 255, 0.507) 25%,
-                rgba(255, 255, 255, 0.397) 100%
-              ),
-              url("../../../assets/images/icons/banner-1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
 
             img {
               position: absolute;
@@ -495,12 +518,9 @@ export default {
         .content {
           display: flex;
           padding: 15px;
-          background: linear-gradient(
-              6.93deg,
-              rgba(0, 0, 0, 0.2) 25.44%,
-              rgba(0, 0, 0, 0) 107.17%
-            ),
-            url("../../../assets/images/icons/banner-1.png");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
 
           p {
             align-self: flex-end;
