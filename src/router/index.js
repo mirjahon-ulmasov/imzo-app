@@ -6,7 +6,7 @@ const routes = [
     redirect: "/dashboard",
   },
   {
-    path: "/",
+    path: "",
     component: () => import("@/layout/admin/Layout.vue"),
     children: [
       {
@@ -138,6 +138,35 @@ const routes = [
             uz: "Shourumalar",
           },
         },
+        children: [
+          {
+            path: "add",
+            name: "addShowroom",
+            component: () => import("@/views/admin/Showrooms/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "showrooms",
+              title: {
+                ru: "Шоурумы",
+                uz: "Shourumalar",
+              },
+            },
+          },
+          {
+            path: "edit/:id",
+            name: "editShowroom",
+            component: () => import("@/views/admin/Showrooms/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "showrooms",
+              title: {
+                ru: "Шоурумы",
+                uz: "Shourumalar",
+              },
+            },
+            props: true,
+          },
+        ],
       },
     ],
   },
