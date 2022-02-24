@@ -19,6 +19,11 @@ npm run build
 ```
 npm run lint
 ```
-
+### Node Version
+```
+14.16.1
+```
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+

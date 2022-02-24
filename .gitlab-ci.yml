@@ -1,0 +1,116 @@
+image: node:14.16.1-alpine3.13
+
+stages:
+  - install
+  - build
+  - deploy 
+
+npm-install:
+  cache:
+    key: admin-node-modules
+    paths:
+      - node_modules/
+  stage: install
+  script:
+    - npm install
+  only:
+    - main
+  tags:
+    - "imzo-app-front"
+
+npm-build:
+  cache:
+    key: admin-node-modules
+    paths:
+      - node_modules/
+    policy: pull
+  stage: build
+  script:
+    - npm run build
+    - npm run lint
+  artifacts:
+    name: prod-build
+    when: on_success
+    paths:
+      - dist
+    expire_in: 30 days
+  only:
+    - main
+  tags:
+    - "imzo-app-front"
+
+deploy:
+  before_script:
+    - which ssh-agent || (apk add --update --no-cache openssh-client)
+    - apk update && apk add rsync
+    - mkdir -p ~/.ssh
+    - mv $SSH_PRIVATE_KEY ~/.ssh/id_rsa
+    - mv $SSH_CONFIG ~/.ssh/config 
+    - chmod -R 600 ~/.ssh/id_rsa
+    - chmod -R 600 ~/.ssh/config
+    - eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa
+  stage: deploy
+  script:
+    - ls -la
+    - ssh root@prod "mkdir -p /var/www/imzo-app-front/"
+    - ssh root@prod "rm -rf /var/www/imzo-app-front/*"
+    - rsync -za -P dist/ prod:/var/www/imzo-app-front
+  only:
+    - main
+  tags:
+    - "imzo-app-front"
+
+alpha-npm-install:
+  cache:
+    key: admin-node-modules
+    paths:
+      - node_modules/
+  stage: install
+  script:
+    - npm install
+  only:
+    - alpha
+  tags:
+    - "imzo-app-front"
+
+alpha-npm-build:
+  cache:
+    key: admin-node-modules
+    paths:
+      - node_modules/
+    policy: pull
+  stage: build
+  script:
+    - npm run build
+    - npm run lint
+  artifacts:
+    name: prod-build
+    when: on_success
+    paths:
+      - dist
+    expire_in: 30 days
+  only:
+    - alpha
+  tags:
+    - "imzo-app-front"
+
+alpha-deploy:
+  before_script:
+    - which ssh-agent || (apk add --update --no-cache openssh-client)
+    - apk update && apk add rsync
+    - mkdir -p ~/.ssh
+    - mv $SSH_PRIVATE_KEY ~/.ssh/id_rsa
+    - mv $SSH_CONFIG ~/.ssh/config 
+    - chmod -R 600 ~/.ssh/id_rsa
+    - chmod -R 600 ~/.ssh/config
+    - eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa
+  stage: deploy
+  script:
+    - ls -la
+    - ssh root@10.7.5.112 "mkdir -p /var/www/imzo-app-front"
+    - ssh root@10.7.5.112 "rm -rf /var/www/imzo-app-front/*"
+    - rsync -za -P dist/ 10.7.5.112:/var/www/imzo-app-front/
+  only:
+    - alpha
+  tags:
+    - "imzo-app-front"

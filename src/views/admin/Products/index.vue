@@ -28,7 +28,7 @@
         </button>
       </div>
     </div>
-    <div class="action-bar">
+    <div class="actions">
       <a class="action-btn">
         <img src="@/assets/images/icons/download-btn.svg" alt="" />
         <p>Скачать</p>
@@ -118,7 +118,7 @@ export default {
       }
     }
   }
-  .action-bar {
+  .actions {
     .action-btn {
       display: flex;
       flex-direction: row;

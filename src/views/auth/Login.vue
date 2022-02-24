@@ -1,29 +1,64 @@
 <template>
   <div class="container">
-    <div class="main-content">
-      <img src="~@/assets/images/logo.png" alt="Logo" />
+    <form @submit.prevent="login()" class="main-content">
+      <img class="logo" src="~@/assets/images/logo.png" alt="Logo" />
       <label class="custom-label" for="">Номер телефона:</label>
-      <input class="custom-input" type="text" />
+      <div class="custom-input">
+        <span>+998</span>
+        <input v-model="phone_number" type="text" />
+      </div>
       <label class="custom-label" for="">Пароль:</label>
-      <input class="custom-input" type="text" />
+      <div class="custom-input">
+        <img
+          @click.prevent="showPassword"
+          src="~@/assets/images/icons/View_hide_light.svg"
+          alt=""
+        />
+        <input v-model="password" :type="type" />
+      </div>
       <div class="row">
-        <a class="forget-password-btn" href="">Забыл пароль?</a>
-        <label for=""
-          ><input value="" type="checkbox" />
+        <label class="custom-checkbox" for="remember">
+          <input v-model="remember_me" id="remember" type="checkbox" />
+          <div class="checkbox-container">
+            <span v-if="remember_me == true"></span>
+          </div>
           <p>Запомнить меня</p>
         </label>
+        <a class="forget-password-btn" href="">Забыл пароль?</a>
       </div>
       <button type="submit">Войти</button>
-    </div>
+    </form>
   </div>
 </template>
 
 <script>
 export default {
-  setup() {
-    return {};
+  data() {
+    return {
+      type: "password",
+      phone_number: "",
+      password: "",
+      remember_me: false,
+    };
   },
-  methods: {},
+  methods: {
+    showPassword() {
+      if (this.type === "password") {
+        this.type = "text";
+      } else {
+        this.type = "password";
+      }
+    },
+    async login() {
+      let phone_number = this.phone_number;
+      let password = this.password;
+      let remember_me = this.remember_me;
+      this.$store.dispatch("auth", { phone_number, password, remember_me });
+    },
+  },
+  mounted() {
+    console.log(this.$store);
+  },
 };
 </script>
 
@@ -39,7 +74,7 @@ export default {
     display: flex;
     flex-direction: column;
     margin: auto;
-    img {
+    .logo {
       margin: 0px auto 2.5rem auto;
       width: 255px;
       height: 89px;
@@ -53,24 +88,54 @@ export default {
       margin: 24px 0px 16px 0px;
     }
     .custom-input {
-      width: 100%;
-      height: 55px;
-      outline: none;
-      padding-left: 16px;
-      background: #ffffff;
-      border: 0.5px solid #d0d4d9;
-      box-sizing: border-box;
-      border-radius: 10px;
-      font-style: normal;
-      font-weight: normal;
-      font-size: 18px;
-      line-height: 172.34%;
-      color: #93928e;
+      position: relative;
+      img {
+        position: absolute;
+        top: calc(50% - 16px);
+        right: 5%;
+        cursor: pointer;
+      }
+      span {
+        position: absolute;
+        top: calc(50% - 12px);
+        left: 20px;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 24px;
+        color: #93928e;
+      }
+      input {
+        width: 100%;
+        height: 55px;
+        outline: none;
+        background: #ffffff;
+        border: 0.5px solid #d0d4d9;
+        box-sizing: border-box;
+        border-radius: 10px;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 40px;
+        color: #93928e;
+      }
+      &:nth-child(3) {
+        input {
+          padding-left: 70px;
+        }
+      }
+      &:nth-child(5) {
+        input {
+          padding-left: 16px;
+        }
+      }
     }
     .row {
       margin: 24px 0px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       .forget-password-btn {
-        float: right;
         text-decoration: none;
         font-style: normal;
         font-weight: normal;
@@ -78,20 +143,37 @@ export default {
         line-height: 172.34%;
         color: #93928e;
       }
-      label {
+      .custom-checkbox {
+        position: relative;
         display: flex;
-        align-items: center;
+        flex-flow: row;
         cursor: pointer;
 
         input[type="checkbox"] {
-          width: 16px;
-          height: 16px;
+          display: none;
+          position: absolute;
+          right: 0;
+        }
+        .checkbox-container {
+          width: 24px;
+          height: 24px;
           background: #ffffff;
           border: 1px solid #dcdcdc;
-          box-sizing: border-box;
           border-radius: 5px;
+          position: relative;
+          span {
+            position: absolute;
+            display: block;
+            background: #51aafd;
+            top: calc(50% - 6px);
+            left: calc(50% - 6px);
+            height: 12px;
+            width: 12px;
+            border-radius: 3px;
+          }
         }
         p {
+          margin-left: 16px;
           font-style: normal;
           font-weight: normal;
           font-size: 16px;
