@@ -64,10 +64,6 @@
           </div>
         </div>
         <div class="input-form">
-          <h4>Телефон</h4>
-          <input type="text" placeholder="Введите" v-model="showroom.phone" />
-        </div>
-        <div class="input-form">
           <h4>Город</h4>
           <v-select
             @input="getCity"
@@ -111,8 +107,8 @@
     <div class="right"></div>
   </div>
   <notification
-    header="Изменения сохранены"
     :isShow="notification.isShow"
+    :header="notification.header"
     :is_success="notification.isSuccess"
     @cancel="cancelHandler"
   ></notification>
@@ -125,7 +121,7 @@ import { reactive, ref } from "vue";
 export default {
   props: ["id"],
   components: { FileUpload },
-  setup() {
+  setup(props) {
     const imgPreviewList = ref([""]);
     const showroom = reactive({
       images: [],
@@ -136,8 +132,8 @@ export default {
       longitude: "",
       latitude: "",
       city: "",
-      phone: "",
     });
+    console.log(props.id);
 
     const fileInputHandler = ({ file, filePreview, id }) => {
       imgPreviewList.value[id] = filePreview;
@@ -152,20 +148,33 @@ export default {
       showroom.city = value;
     };
 
-    const submitShowroom = () => {
-      console.log(showroom);
-      notification.isShow = true;
-      notification.isSuccess = true;
-    };
-
     // -------------- Notifications --------------
-    const notification = reactive({
+    const notification = ref({
       isShow: false,
       isSuccess: false,
+      header: "",
     });
     const cancelHandler = () => {
-      notification.isShow = false;
+      notification.value.isShow = false;
     };
+
+    const submitShowroom = () => {
+      console.log(showroom);
+      if (props.id) {
+        notification.value = {
+          isShow: true,
+          isSuccess: true,
+          header: "Шоурум успешно изменен!",
+        };
+      } else {
+        notification.value = {
+          isShow: true,
+          isSuccess: true,
+          header: "Шоурум успешно зарегистрирован!",
+        };
+      }
+    };
+
     return {
       imgPreviewList,
       fileInputHandler,

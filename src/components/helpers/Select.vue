@@ -78,6 +78,11 @@ export default {
     font-weight: normal;
     font-size: 18px;
     color: #93928e;
+
+    &:hover {
+      border: 0.5px solid #51aafd;
+      box-shadow: 0px 0px 3px 1px rgba(70, 120, 236, 0.4);
+    }
   }
   .active {
     border: 1px solid #51aafd;

@@ -64,7 +64,10 @@
 <script>
 export default {
   setup() {
-    return {};
+    const filterPage = value => {
+      console.log(value);
+    };
+    return { filterPage };
   },
 };
 </script>

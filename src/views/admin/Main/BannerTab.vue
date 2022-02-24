@@ -246,23 +246,13 @@ export default {
           margin-bottom: 1rem;
         }
         .image-input {
-          position: relative;
           width: 300px;
           height: 170px;
           border-radius: 20px;
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
 
           img {
-            position: absolute;
             top: 55px;
             left: 40%;
-            padding: 0.8rem;
-            border-radius: 50%;
-            opacity: 0.9;
-            background: #ffffff;
-            cursor: pointer;
           }
         }
       }

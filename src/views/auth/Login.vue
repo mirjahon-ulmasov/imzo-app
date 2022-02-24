@@ -97,12 +97,9 @@ export default {
       }
       span {
         position: absolute;
-        top: calc(50% - 12px);
+        top: calc(50% - 10px);
         left: 20px;
-        font-style: normal;
-        font-weight: normal;
         font-size: 18px;
-        line-height: 24px;
         color: #93928e;
       }
       input {
@@ -113,8 +110,7 @@ export default {
         border: 0.5px solid #d0d4d9;
         box-sizing: border-box;
         border-radius: 10px;
-        font-style: normal;
-        font-weight: normal;
+        letter-spacing: 1px;
         font-size: 18px;
         line-height: 40px;
         color: #93928e;
@@ -140,14 +136,14 @@ export default {
         font-style: normal;
         font-weight: normal;
         font-size: 16px;
-        line-height: 172.34%;
+        letter-spacing: 0.7px;
         color: #93928e;
       }
       .custom-checkbox {
         position: relative;
         display: flex;
-        flex-flow: row;
         cursor: pointer;
+        align-items: center;
 
         input[type="checkbox"] {
           display: none;
@@ -176,8 +172,8 @@ export default {
           margin-left: 16px;
           font-style: normal;
           font-weight: normal;
+          letter-spacing: 0.7px;
           font-size: 16px;
-          line-height: 172.34%;
           color: #93928e;
         }
       }
