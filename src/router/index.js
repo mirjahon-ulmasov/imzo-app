@@ -112,6 +112,35 @@ const routes = [
             uz: "Bildirishnomalar",
           },
         },
+        children: [
+          {
+            path: "add",
+            name: "addNotification",
+            component: () => import("@/views/admin/Notifications/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "notifications",
+              title: {
+                ru: "Уведомления",
+                uz: "Bildirishnomalar",
+              },
+            },
+          },
+          {
+            path: "edit/:id",
+            name: "editNotification",
+            component: () => import("@/views/admin/Notifications/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "notifications",
+              title: {
+                ru: "Уведомления",
+                uz: "Bildirishnomalar",
+              },
+            },
+            props: true,
+          },
+        ],
       },
       {
         path: "feedback",

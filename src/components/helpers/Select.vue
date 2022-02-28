@@ -5,7 +5,7 @@
       <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
-      <ul>
+      <ul v-if="options">
         <li
           v-for="(option, i) in options"
           :key="i"
@@ -18,6 +18,7 @@
           {{ option.title }}
         </li>
       </ul>
+      <h3 v-if="!options">There is no data</h3>
     </div>
   </div>
 </template>
@@ -28,7 +29,7 @@ export default {
   props: {
     options: {
       type: Array,
-      required: true,
+      required: false,
     },
     default: {
       type: Object,
@@ -47,9 +48,9 @@ export default {
     let selected = ref(
       props.default
         ? props.default
-        : props.options.length > 0
+        : props.options && props.options.length > 0
         ? props.options[0]
-        : null
+        : { title: "-", value: "" }
     );
 
     onMounted(() => {
@@ -90,9 +91,9 @@ export default {
   .dropdown-content {
     position: absolute;
     top: 55px;
-    max-height: 250px;
+    max-height: 220px;
     width: 400px;
-    padding: 10px;
+    padding: 20px;
     border-radius: 10px;
     background: #ffffff;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
@@ -101,11 +102,15 @@ export default {
 
     ul {
       li {
-        margin: 10px;
+        margin-top: 10px;
         list-style: none;
         font-size: 16px;
         color: #383838;
       }
+    }
+    h3 {
+      font-size: 18px;
+      color: #aaa;
     }
   }
 }

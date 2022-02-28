@@ -38,7 +38,7 @@
             <div
               class="image-input"
               :style="{
-                background: `linear-gradient(
+                'background-image': `linear-gradient(
                 7deg,
                 rgba(255, 255, 255, 0.5) 25%,
                 rgba(255, 255, 255, 0.5) 100%
@@ -89,7 +89,7 @@
           <div
             class="content"
             :style="{
-              background: `linear-gradient(6.93deg, rgba(0, 0, 0, 0.2) 25.44%, rgba(0, 0, 0, 0) 107.17%),
+              'background-image': `linear-gradient(6.93deg, rgba(0, 0, 0, 0.2) 25.44%, rgba(0, 0, 0, 0) 107.17%),
             url(${
               imgPreview
                 ? imgPreview

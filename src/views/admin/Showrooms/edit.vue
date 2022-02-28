@@ -1,26 +1,27 @@
 <template>
-  <p>
-    <span>Шоурумы</span>
-    <img src="@/assets/images/icons/arrow-right.svg" alt="arrow" />
-    Добавление шоурума
-  </p>
-  <h3>Регистрация шоурума</h3>
-  <h3 style="display: inline-block">Загрузка изображений</h3>
-  <div class="actions">
-    <button style="background: #edf7ff" @click="imgPreviewList.push('')">
-      <img src="@/assets/images/icons/plus-icon.svg" alt="plus" />
-    </button>
-    <button style="background: #ffeded" @click="imgPreviewList.pop()">
-      <img src="@/assets/images/icons/trash.svg" alt="trash" />
-    </button>
-  </div>
-  <div class="images">
-    <div
-      v-for="(imgPreview, i) in imgPreviewList"
-      :key="i"
-      class="image-input"
-      :style="{
-        background: `linear-gradient(
+  <div v-if="regions">
+    <p>
+      <span>Шоурумы</span>
+      <img src="@/assets/images/icons/arrow-right.svg" alt="arrow" />
+      Добавление шоурума
+    </p>
+    <h3>Регистрация шоурума</h3>
+    <h3 style="display: inline-block">Загрузка изображений</h3>
+    <div class="actions">
+      <button style="background: #edf7ff" @click="imgPreviewList.push('')">
+        <img src="@/assets/images/icons/plus-icon.svg" alt="plus" />
+      </button>
+      <button style="background: #ffeded" @click="imgPreviewList.pop()">
+        <img src="@/assets/images/icons/trash.svg" alt="trash" />
+      </button>
+    </div>
+    <div class="images">
+      <div
+        v-for="(imgPreview, i) in imgPreviewList"
+        :key="i"
+        class="image-input"
+        :style="{
+          'background-image': `linear-gradient(
                 0deg,
                 rgba(255, 255, 255, 0.5) 25%,
                 rgba(255, 255, 255, 0.5) 100%
@@ -30,81 +31,68 @@
                   ? imgPreview
                   : require('@/assets/images/icons/banner-3.png')
               })`,
-      }"
-    >
-      <label>
-        <img src="@/assets/images/icons/camera.svg" alt="camera" />
-        <FileUpload :id="i" @fileInput="fileInputHandler" />
-      </label>
+        }"
+      >
+        <label>
+          <img src="@/assets/images/icons/camera.svg" alt="camera" />
+          <FileUpload :id="i" @fileInput="fileInputHandler" />
+        </label>
+      </div>
     </div>
-  </div>
-  <div class="main">
-    <div class="left">
-      <form @submit.prevent="submitShowroom">
-        <div class="input-form">
-          <h4>Название шоурума</h4>
-          <input type="text" placeholder="Введите" v-model="showroom.name" />
-        </div>
-        <div class="coordinates">
-          <div>
-            <h4>Долгота</h4>
+    <div class="main">
+      <div class="left">
+        <form @submit.prevent="submitShowroom">
+          <div class="input-form">
+            <h4>Название шоурума</h4>
+            <input type="text" placeholder="Введите" v-model="showroom.name" />
+          </div>
+          <div class="coordinates">
+            <div>
+              <h4>Долгота</h4>
+              <input
+                type="text"
+                placeholder="0.00000"
+                v-model="showroom.longitude"
+              />
+            </div>
+            <div>
+              <h4>Широта</h4>
+              <input
+                type="text"
+                placeholder="0.00000"
+                v-model="showroom.latitude"
+              />
+            </div>
+          </div>
+          <div class="input-form">
+            <h4>Город</h4>
+            <v-select @input="getRegion" :options="regions"></v-select>
+          </div>
+          <div class="input-form">
+            <h4>Район</h4>
+            <v-select @input="getDistrict" :options="districts"></v-select>
+          </div>
+          <div class="input-form">
+            <h4>Улица</h4>
             <input
               type="text"
-              placeholder="0.00000"
-              v-model="showroom.longitude"
+              placeholder="Введите"
+              v-model="showroom.address_street"
             />
           </div>
-          <div>
-            <h4>Широта</h4>
+          <div class="input-form">
+            <h4>Дом</h4>
             <input
               type="text"
-              placeholder="0.00000"
-              v-model="showroom.latitude"
+              placeholder="Введите"
+              v-model="showroom.house_number"
             />
           </div>
-        </div>
-        <div class="input-form">
-          <h4>Город</h4>
-          <v-select
-            @input="getCity"
-            :options="[
-              { title: 'Товар', value: 'product' },
-              { title: 'Отзывы', value: 'reviews' },
-              { title: 'Замер', value: 'measurement' },
-            ]"
-          ></v-select>
-        </div>
-        <div class="input-form">
-          <h4>Район</h4>
-          <v-select
-            @input="getDistrict"
-            :options="[
-              { title: 'Товар', value: 'product' },
-              { title: 'Отзывы', value: 'reviews' },
-              { title: 'Замер', value: 'measurement' },
-            ]"
-          ></v-select>
-        </div>
-        <div class="input-form">
-          <h4>Улица</h4>
-          <input
-            type="text"
-            placeholder="Введите"
-            v-model="showroom.address_street"
-          />
-        </div>
-        <div class="input-form">
-          <h4>Дом</h4>
-          <input
-            type="text"
-            placeholder="Введите"
-            v-model="showroom.house_number"
-          />
-        </div>
-        <button type="submit" class="form-btn">Сохранить шоурум</button>
-      </form>
+          <button type="submit" class="form-btn">Сохранить шоурум</button>
+        </form>
+      </div>
+      <div class="right"></div>
     </div>
-    <div class="right"></div>
   </div>
   <notification
     :isShow="notification.isShow"
@@ -116,37 +104,55 @@
 
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
-import { reactive, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { useStore } from "vuex";
+// import { useRouter } from "vue-router";
 
 export default {
   props: ["id"],
   components: { FileUpload },
   setup(props) {
+    const store = useStore();
+    // const router = useRouter();
+
     const imgPreviewList = ref([""]);
-    const showroom = reactive({
-      images: [],
+    const images = ref([]);
+
+    const showroom = ref({
       name: "",
       district: "",
       address_street: "",
       house_number: "",
       longitude: "",
       latitude: "",
-      city: "",
     });
-    console.log(props.id);
 
     const fileInputHandler = ({ file, filePreview, id }) => {
       imgPreviewList.value[id] = filePreview;
-      showroom.images.push(file);
+      images.value.push(file);
     };
 
+    // -------------- EDIT SHOWROOM --------------
+    onMounted(() => {
+      if (props.id) {
+        // store.dispatch("fetchShowroomById", props.id);
+        store.dispatch("fetchShowroomImages", props.id).then(data => {
+          data.items.forEach((img, i) => {
+            imgPreviewList.value[i] = img.path;
+          });
+        });
+      }
+    });
+
+    // -------------- Region and Districts --------------
     const getDistrict = value => {
-      showroom.district = value;
+      showroom.value.district = value;
+    };
+    const getRegion = value => {
+      store.dispatch("fetchDistricts", value);
     };
 
-    const getCity = value => {
-      showroom.city = value;
-    };
+    store.dispatch("fetchRegions");
 
     // -------------- Notifications --------------
     const notification = ref({
@@ -158,21 +164,54 @@ export default {
       notification.value.isShow = false;
     };
 
+    // -------------- Submit --------------
     const submitShowroom = () => {
-      console.log(showroom);
+      const formData = new FormData();
+
+      images.value.forEach(image => {
+        formData.append("images", image);
+      });
+      formData.append("name", showroom.value.name);
+      formData.append("district", showroom.value.district);
+      formData.append("address_street", showroom.value.address_street);
+      formData.append("house_number", showroom.value.house_number);
+      formData.append("longitude", showroom.value.longitude);
+      formData.append("latitude", showroom.value.latitude);
+
       if (props.id) {
-        notification.value = {
-          isShow: true,
-          isSuccess: true,
-          header: "Шоурум успешно изменен!",
-        };
+        store
+          .dispatch("updateShowroomById", { id: props.id, data: formData })
+          .then(() => {
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+              header: "Шоурум успешно изменен!",
+            };
+          });
       } else {
-        notification.value = {
-          isShow: true,
-          isSuccess: true,
-          header: "Шоурум успешно зарегистрирован!",
-        };
+        store.dispatch("createShowroom", formData).then(() => {
+          reset();
+          notification.value = {
+            isShow: true,
+            isSuccess: true,
+            header: "Шоурум успешно зарегистрирован!",
+          };
+        });
       }
+    };
+
+    // -------------- Reset --------------
+    const reset = () => {
+      imgPreviewList.value = [""];
+      images.value = [];
+      showroom.value = {
+        name: "",
+        district: "",
+        address_street: "",
+        house_number: "",
+        longitude: "",
+        latitude: "",
+      };
     };
 
     return {
@@ -181,9 +220,11 @@ export default {
       showroom,
       submitShowroom,
       getDistrict,
-      getCity,
+      getRegion,
       notification,
       cancelHandler,
+      regions: computed(() => store.getters.getRegions),
+      districts: computed(() => store.getters.getDistricts),
     };
   },
 };

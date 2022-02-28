@@ -1,6 +1,8 @@
 import { createStore } from "vuex";
 import mainModule from "./main.module";
 import authModule from "./auth.module";
+import showroomModule from "./showroom.module";
+
 export default createStore({
   state: {},
   mutations: {},
@@ -8,5 +10,6 @@ export default createStore({
   modules: {
     main: mainModule,
     auth: authModule,
+    showroom: showroomModule,
   },
 });

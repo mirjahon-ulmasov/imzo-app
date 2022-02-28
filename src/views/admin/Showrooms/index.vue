@@ -22,52 +22,132 @@
           <p>Название шоурума</p>
           <p>Долгота и широта</p>
           <p>Дата создания</p>
-          <p>Номер телефона</p>
           <p>Город</p>
           <p>Район</p>
           <p>Улица</p>
           <p>Редактировать</p>
         </div>
-        <div class="row table-body">
-          <p>Шоурум №5</p>
-          <p>0.0000 ; 00000</p>
-          <p><span>16:44</span> 26.01.2022</p>
-          <p>+998 90 123-12-12</p>
-          <p>Ташкент</p>
-          <p>Чиланзар</p>
-          <p>Шокирарык</p>
-          <p>
-            <router-link :to="{ name: 'editShowroom', params: { id: 1 } }">
+        <div v-if="showroomList">
+          <div
+            class="row table-body"
+            v-for="(showroom, i) in showroomList"
+            :key="i"
+          >
+            <p>{{ showroom.name || "&#8212;" }}</p>
+            <p>{{ showroom.longitude_and_latitude }}</p>
+            <p>
+              <span>{{ getTime(showroom.created_at) }}</span>
+              {{ getDate(showroom.created_at) }}
+            </p>
+            <p>{{ showroom.region }}</p>
+            <p>{{ showroom.district }}</p>
+            <p>{{ showroom.street }}</p>
+            <p>
+              <router-link
+                :to="{ name: 'editShowroom', params: { id: showroom.id } }"
+              >
+                <img
+                  src="@/assets/images/icons/edit-small.svg"
+                  alt="edit"
+                  style="background: #edf7ff"
+                />
+                Изменить
+              </router-link>
+            </p>
+            <p @click="deleteHandler(showroom.id)">
               <img
-                src="@/assets/images/icons/edit-small.svg"
-                alt="edit"
-                style="background: #edf7ff"
+                src="@/assets/images/icons/trash.svg"
+                alt="trash"
+                style="background: #ffeded"
               />
-              Изменить
-            </router-link>
-          </p>
-          <p>
-            <img
-              src="@/assets/images/icons/trash.svg"
-              alt="trash"
-              style="background: #ffeded"
-            />
-            Удалить
-          </p>
+              Удалить
+            </p>
+          </div>
         </div>
+        <div v-else><p>There is no data</p></div>
       </div>
     </div>
   </div>
   <router-view></router-view>
+  <notification
+    :isShow="notification.isShow"
+    :header="notification.header"
+    :content="notification.content"
+    :is_success="notification.isSuccess"
+    @cancel="cancelHandler"
+    @ok="okHandler"
+  ></notification>
 </template>
 
 <script>
+import { computed, onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import moment from "moment";
+
 export default {
   setup() {
+    const store = useStore();
+    onMounted(() => {
+      moment.locale("ru");
+      store.dispatch("fetchShowrooms");
+    });
+
     const filterPage = value => {
       console.log(value);
     };
-    return { filterPage };
+
+    // -------------- Time and Date --------------
+    const getTime = time => {
+      return moment(Date.parse(time)).format("LT");
+    };
+    const getDate = date => {
+      return moment(Date.parse(date)).format("L");
+    };
+
+    // -------------- Delete Showroom --------------
+    const deletedId = ref("");
+    const deleteHandler = id => {
+      deletedId.value = id;
+      notification.value = {
+        isShow: true,
+        isSuccess: false,
+        header: "Действительно хотите удалить?",
+        content: "Данные файлы будут безвозвратно удалены",
+      };
+    };
+
+    // -------------- Notifications --------------
+    const notification = ref({
+      isShow: false,
+      isSuccess: false,
+      header: "",
+      content: "",
+    });
+
+    const cancelHandler = () => {
+      notification.value = {
+        isShow: false,
+        isSuccess: false,
+        header: "",
+        content: "",
+      };
+      deletedId.value = "";
+    };
+
+    const okHandler = () => {
+      store.dispatch("deleteShowroomById", deletedId.value);
+    };
+
+    return {
+      getTime,
+      getDate,
+      filterPage,
+      deleteHandler,
+      notification,
+      cancelHandler,
+      okHandler,
+      showroomList: computed(() => store.getters.getShowroomList),
+    };
   },
 };
 </script>
@@ -83,7 +163,7 @@ export default {
   .actions {
     display: flex;
     align-items: center;
-    margin: 1rem 0;
+    margin: 1rem 0 2rem 0;
     justify-content: space-between;
 
     .btn {
@@ -106,13 +186,19 @@ export default {
     overflow-x: scroll;
 
     .table {
-      min-width: 1701px;
+      min-width: 1750px;
       width: 100%;
       height: auto;
       padding: 30px 32px;
       background: #ffffff;
       box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
       border-radius: 20px;
+
+      p {
+        color: #e1e1e1;
+        font-size: 24px;
+        font-weight: 500;
+      }
       .row {
         text-decoration: none;
         width: 100%;
@@ -126,17 +212,16 @@ export default {
           color: #93928e;
           &:nth-child(1),
           &:nth-child(3),
-          &:nth-child(4) {
+          &:nth-child(4),
+          &:nth-child(5),
+          &:nth-child(7) {
             width: 12%;
           }
-          &:nth-child(5),
-          &:nth-child(6),
-          &:nth-child(7),
-          &:nth-child(8) {
-            width: 10%;
+          &:nth-child(6) {
+            width: 18%;
           }
           &:nth-child(2) {
-            width: 14%;
+            width: 15%;
           }
         }
       }
@@ -161,7 +246,7 @@ export default {
             color: #51aafd;
           }
           &:nth-child(2),
-          &:nth-child(8) {
+          &:nth-child(7) {
             color: #51aafd;
             a {
               display: flex;
