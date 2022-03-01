@@ -30,11 +30,11 @@
     </div>
     <div class="actions">
       <a class="action-btn">
-        <img src="~@/assets/images/icons/download-btn.svg" alt="" />
+        <img src="@/assets/images/icons/download-btn.svg" alt="" />
         <p>Скачать</p>
       </a>
       <router-link to="/" class="action-btn"
-        ><img src="~@/assets/images/icons/plus-icon.svg" alt="" />
+        ><img src="@/assets/images/icons/plus-icon.svg" alt="" />
         <p>Добавить товар</p>
       </router-link>
       <div class="dropdown-btn" @click="expanded = !expanded">
@@ -189,30 +189,6 @@ export default {
         display: flex;
         flex-direction: row;
         align-items: center;
-        .triangle-up {
-          width: 0;
-          height: 0;
-          margin-left: 0.7rem;
-          border-left: 7px solid transparent;
-          border-right: 7px solid transparent;
-          border-bottom: 7px solid #51aafd;
-          transition: all 200ms linear;
-        }
-
-        .triangle-down {
-          width: 0;
-          height: 0;
-          margin-left: 0.7rem;
-          border-left: 7px solid transparent;
-          border-right: 7px solid transparent;
-          border-bottom: 7px solid #51aafd;
-          transition: all 200ms linear;
-          transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          -webkit-transform: rotate(180deg);
-          -ms-transform: rotate(180deg);
-          -o-transform: rotate(180deg);
-        }
       }
       .dropdown-content {
         z-index: 10;

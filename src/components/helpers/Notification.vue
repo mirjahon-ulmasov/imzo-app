@@ -1,9 +1,6 @@
 <template>
   <div v-if="isShow" class="background" @click="handlerCancel()">
-    <div
-      class="notification"
-      :style="{ width: is_success ? '400px' : '540px' }"
-    >
+    <div class="notification">
       <img
         v-show="is_success"
         src="@/assets/images/icons/datepicker-close.svg"
@@ -66,12 +63,13 @@ export default {
   z-index: 10;
 
   .notification {
+    display: inline-block;
     position: relative;
-    margin: 18% auto;
+    margin: 18% 30%;
     background: #fff;
     border-radius: 10px;
     text-align: center;
-    padding: 28px;
+    padding: 30px 75px;
     box-shadow: 0px 5px 20px 1px rgba(0, 0, 0, 0.1);
 
     * {

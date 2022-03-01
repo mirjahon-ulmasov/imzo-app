@@ -1,11 +1,11 @@
 <template>
-  <div class="dropdown" @blur="isOpen = false">
+  <div class="dropdown" @click.self="isOpen = false">
     <div class="dropdown-input" @click="isOpen = !isOpen">
       {{ selected.title }}
-      <div :class="isOpen ? 'triangle-down' : 'triangle-up'" />
+      <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
-      <ul>
+      <ul v-if="options">
         <li
           v-for="(option, i) in options"
           :key="i"
@@ -18,6 +18,7 @@
           {{ option.title }}
         </li>
       </ul>
+      <h3 v-if="!options">There is no data</h3>
     </div>
   </div>
 </template>
@@ -28,7 +29,7 @@ export default {
   props: {
     options: {
       type: Array,
-      required: true,
+      required: false,
     },
     default: {
       type: Object,
@@ -47,9 +48,9 @@ export default {
     let selected = ref(
       props.default
         ? props.default
-        : props.options.length > 0
+        : props.options && props.options.length > 0
         ? props.options[0]
-        : null
+        : { title: "-", value: "" }
     );
 
     onMounted(() => {
@@ -67,38 +68,49 @@ export default {
 
   .dropdown-input {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    width: 180px;
-    height: 35px;
-    background: #ebf5ff;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #51aafd;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+    width: 400px;
+    background: #ffffff;
+    padding: 10px 24px;
+    border: 0.5px solid #d0d4d9;
+    box-sizing: border-box;
+    border-radius: 10px;
+    font-weight: normal;
+    font-size: 18px;
+    color: #93928e;
+
+    &:hover {
+      border: 0.5px solid #51aafd;
+      box-shadow: 0px 0px 3px 1px rgba(70, 120, 236, 0.4);
+    }
   }
   .active {
     border: 1px solid #51aafd;
   }
   .dropdown-content {
     position: absolute;
-    top: 45px;
-    left: -5px;
-    width: 190px;
-    background: #fff;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+    top: 55px;
+    max-height: 220px;
+    width: 400px;
+    padding: 20px;
     border-radius: 10px;
-    padding: 10px 15px;
+    background: #ffffff;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: scroll;
     z-index: 10;
 
     ul {
       li {
-        margin: 15px;
+        margin-top: 10px;
         list-style: none;
-        font-weight: 400;
         font-size: 16px;
-        color: #51aafd;
+        color: #383838;
       }
+    }
+    h3 {
+      font-size: 18px;
+      color: #aaa;
     }
   }
 }

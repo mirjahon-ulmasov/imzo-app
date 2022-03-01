@@ -112,6 +112,35 @@ const routes = [
             uz: "Bildirishnomalar",
           },
         },
+        children: [
+          {
+            path: "add",
+            name: "addNotification",
+            component: () => import("@/views/admin/Notifications/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "notifications",
+              title: {
+                ru: "Уведомления",
+                uz: "Bildirishnomalar",
+              },
+            },
+          },
+          {
+            path: "edit/:id",
+            name: "editNotification",
+            component: () => import("@/views/admin/Notifications/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "notifications",
+              title: {
+                ru: "Уведомления",
+                uz: "Bildirishnomalar",
+              },
+            },
+            props: true,
+          },
+        ],
       },
       {
         path: "feedback",
@@ -138,6 +167,35 @@ const routes = [
             uz: "Shourumalar",
           },
         },
+        children: [
+          {
+            path: "add",
+            name: "addShowroom",
+            component: () => import("@/views/admin/Showrooms/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "showrooms",
+              title: {
+                ru: "Шоурумы",
+                uz: "Shourumalar",
+              },
+            },
+          },
+          {
+            path: "edit/:id",
+            name: "editShowroom",
+            component: () => import("@/views/admin/Showrooms/edit.vue"),
+            meta: {
+              role: "admin",
+              link: "showrooms",
+              title: {
+                ru: "Шоурумы",
+                uz: "Shourumalar",
+              },
+            },
+            props: true,
+          },
+        ],
       },
     ],
   },

@@ -1,5 +1,6 @@
 @import "vue3-date-time-picker/src/Vue3DatePicker/style/main.scss";
 @import "./datepicker.scss";
+@import "./radio.scss";
 
 .scroll {
   overflow: scroll;
@@ -17,5 +18,22 @@
     border-radius: 30px;
     border: 1px solid transparent;
     background-clip: content-box;
+  }
+}
+
+.image-input {
+  position: relative;
+  display: inline-block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  img {
+    position: absolute;
+    padding: 0.6rem;
+    border-radius: 50%;
+    opacity: 0.9;
+    background: #ffffff;
+    cursor: pointer;
   }
 }
