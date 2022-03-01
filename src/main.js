@@ -11,6 +11,7 @@ import Searchbar from "./components/helpers/Searchbar.vue";
 import Datepicker from "./components/helpers/DatePicker.vue";
 import Notification from "./components/helpers/Notification.vue";
 import Select from "./components/helpers/Select.vue";
+import LoadingSpinner from "./components/helpers/LoadingSpinner.vue";
 
 //styles
 import "./assets/css/main.css";
@@ -25,7 +26,8 @@ app
   .component("dropdown", Dropdown)
   .component("v-select", Select)
   .component("searchbar", Searchbar)
-  .component("datepicker", Datepicker);
+  .component("datepicker", Datepicker)
+  .component("spinner", LoadingSpinner);
 
 app.directive("dragscroll", dragscrollNext);
 app.use(store).use(router);

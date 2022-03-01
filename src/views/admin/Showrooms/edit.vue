@@ -88,7 +88,9 @@
               v-model="showroom.house_number"
             />
           </div>
-          <button type="submit" class="form-btn">Сохранить шоурум</button>
+          <button type="submit" class="form-btn" :disabled="disabled">
+            Сохранить шоурум
+          </button>
         </form>
       </div>
       <div class="right"></div>
@@ -117,6 +119,7 @@ export default {
 
     const imgPreviewList = ref([""]);
     const images = ref([]);
+    const disabled = ref(false);
 
     const showroom = ref({
       name: "",
@@ -134,13 +137,13 @@ export default {
 
     // -------------- EDIT SHOWROOM --------------
     onMounted(() => {
+      store.dispatch("fetchRegions");
+
       if (props.id) {
         // store.dispatch("fetchShowroomById", props.id);
-        store.dispatch("fetchShowroomImages", props.id).then(data => {
-          data.items.forEach((img, i) => {
-            imgPreviewList.value[i] = img.path;
-          });
-        });
+        // data.items.forEach((img, i) => {
+        //   imgPreviewList.value[i] = img.path;
+        // });
       }
     });
 
@@ -151,8 +154,6 @@ export default {
     const getRegion = value => {
       store.dispatch("fetchDistricts", value);
     };
-
-    store.dispatch("fetchRegions");
 
     // -------------- Notifications --------------
     const notification = ref({
@@ -223,6 +224,7 @@ export default {
       getRegion,
       notification,
       cancelHandler,
+      disabled,
       regions: computed(() => store.getters.getRegions),
       districts: computed(() => store.getters.getDistricts),
     };

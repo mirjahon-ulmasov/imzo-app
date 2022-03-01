@@ -66,6 +66,7 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  // ---------------- CREATE SHOWROOM ----------------
   createShowroom(context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -77,6 +78,7 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  // ---------------- UPDATE SHOWROOM ----------------
   updateShowroomById(context, { id, data }) {
     return new Promise((resolve, reject) => {
       axios
@@ -88,6 +90,7 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  // ---------------- DELETE SHOWROOM ----------------
   deleteShowroomById(context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -99,24 +102,41 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  // ---------------- GET SHOWROOM ----------------
   fetchShowroomById(context, payload) {
     return new Promise((resolve, reject) => {
       axios
         .get(`showroom/update/detail/${payload}`)
         .then(response => response.data)
         .then(data => {
-          console.log(data);
-          // context.commit("SET_SHOWROOM", data);
+          context.commit("SET_SHOWROOM", data);
+          resolve(data);
         })
         .catch(err => reject(err));
     });
   },
-  fetchShowroomImages(context, payload) {
+  // ---------------- ADD image ----------------
+  addShowroomImage(context, payload) {
+    const { id, image } = payload;
     return new Promise((resolve, reject) => {
       axios
-        .get(`showroom/${payload}/images`)
-        .then(response => response.data)
-        .then(data => resolve(data))
+        .post("showroom/update/add/image", { showroom_id: id, image: image })
+        .then(response => {
+          context.dispatch("fetchShowroomById", id);
+          resolve(response);
+        })
+        .catch(err => reject(err));
+    });
+  },
+  // ---------------- DELETE images ----------------
+  deleteShowroomImage(context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(`showroom/delete/image/${payload}`)
+        .then(response => {
+          context.dispatch("fetchShowroomById", payload);
+          resolve(response);
+        })
         .catch(err => reject(err));
     });
   },
