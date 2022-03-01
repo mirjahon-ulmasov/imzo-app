@@ -37,3 +37,21 @@
     cursor: pointer;
   }
 }
+
+.form-btn {
+  padding: 13px 24px;
+  margin: 0 24px 15px 0;
+  border: none;
+  font-size: 18px;
+  font-weight: 400;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #51aafd;
+  box-shadow: 0px 5px 20px transparent;
+  transition: 0.2s;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}

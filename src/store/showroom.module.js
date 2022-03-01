@@ -109,7 +109,6 @@ const actions = {
         .get(`showroom/update/detail/${payload}`)
         .then(response => response.data)
         .then(data => {
-          context.commit("SET_SHOWROOM", data);
           resolve(data);
         })
         .catch(err => reject(err));
@@ -151,9 +150,6 @@ const mutations = {
   },
   SET_DISTRICTS(state, payload) {
     state.districts = payload;
-  },
-  SET_SHOWROOM(state, payload) {
-    state.showroom = payload;
   },
 };
 

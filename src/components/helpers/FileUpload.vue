@@ -10,13 +10,7 @@
 
 <script>
 export default {
-  props: {
-    id: {
-      type: Number,
-      default: 0,
-      required: false,
-    },
-  },
+  props: {},
   methods: {
     selectImgFile() {
       let fileInput = this.$refs.fileInput;
@@ -28,7 +22,6 @@ export default {
           this.$emit("fileInput", {
             file: imgFile[0],
             filePreview: e.target.result,
-            id: this.id,
           });
         };
         reader.readAsDataURL(imgFile[0]);

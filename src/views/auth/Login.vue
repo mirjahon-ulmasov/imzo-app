@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="page">
     <form @submit.prevent="login()" class="main-content">
       <img class="logo" src="~@/assets/images/logo.png" alt="Logo" />
       <label class="custom-label" for="">Номер телефона:</label>
@@ -62,7 +62,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.page {
   width: 100%;
   height: 100vh;
   display: flex;
@@ -99,7 +99,6 @@ export default {
         top: calc(50% - 10px);
         left: 20px;
         font-size: 18px;
-        line-height: 26.5px;
         color: #93928e;
       }
       input {
@@ -112,7 +111,6 @@ export default {
         border-radius: 10px;
         letter-spacing: 1px;
         font-size: 18px;
-        line-height: 40px;
         color: #93928e;
       }
       &:nth-child(3) {

@@ -1,5 +1,7 @@
 <template>
-  <div v-if="regions">
+  <div
+    v-if="(regions && path === '/showrooms/add') || place.districtName !== ''"
+  >
     <p>
       <span>Шоурумы</span>
       <img src="@/assets/images/icons/arrow-right.svg" alt="arrow" />
@@ -8,10 +10,10 @@
     <h3>Регистрация шоурума</h3>
     <h3 style="display: inline-block">Загрузка изображений</h3>
     <div class="actions">
-      <button style="background: #edf7ff" @click="imgPreviewList.push('')">
+      <button style="background: #edf7ff" @click="addImageHandler()">
         <img src="@/assets/images/icons/plus-icon.svg" alt="plus" />
       </button>
-      <button style="background: #ffeded" @click="imgPreviewList.pop()">
+      <button style="background: #ffeded" @click="deleteImageHandler()">
         <img src="@/assets/images/icons/trash.svg" alt="trash" />
       </button>
     </div>
@@ -21,21 +23,26 @@
         :key="i"
         class="image-input"
         :style="{
+          'box-shadow':
+            imgPreview.id === activeImgId
+              ? '0px 0px 2px 2px rgb(81, 170, 253)'
+              : '',
           'background-image': `linear-gradient(
                 0deg,
                 rgba(255, 255, 255, 0.5) 25%,
                 rgba(255, 255, 255, 0.5) 100%
               ),
               url(${
-                imgPreview
-                  ? imgPreview
+                imgPreview.image_link !== ''
+                  ? imgPreview.image_link
                   : require('@/assets/images/icons/banner-3.png')
               })`,
         }"
+        @click="setActiveImg(imgPreview.id)"
       >
         <label>
           <img src="@/assets/images/icons/camera.svg" alt="camera" />
-          <FileUpload :id="i" @fileInput="fileInputHandler" />
+          <FileUpload @fileInput="fileInputHandler" />
         </label>
       </div>
     </div>
@@ -66,11 +73,25 @@
           </div>
           <div class="input-form">
             <h4>Город</h4>
-            <v-select @input="getRegion" :options="regions"></v-select>
+            <v-select
+              @input="getRegion"
+              :options="regions"
+              :default="{
+                title: place.regionName,
+                value: place.regionId,
+              }"
+            ></v-select>
           </div>
           <div class="input-form">
             <h4>Район</h4>
-            <v-select @input="getDistrict" :options="districts"></v-select>
+            <v-select
+              @input="getDistrict"
+              :options="districts"
+              :default="{
+                title: place.districtName,
+                value: place.districtId,
+              }"
+            ></v-select>
           </div>
           <div class="input-form">
             <h4>Улица</h4>
@@ -106,19 +127,22 @@
 
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
-import { computed, ref, onMounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useStore } from "vuex";
-// import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 export default {
   props: ["id"],
   components: { FileUpload },
   setup(props) {
     const store = useStore();
-    // const router = useRouter();
+    const router = useRouter();
+    const route = useRoute();
 
-    const imgPreviewList = ref([""]);
+    const imgPreviewList = ref([{ image_link: "", id: Date.now() }]);
+    const activeImgId = ref(1);
     const images = ref([]);
+
     const disabled = ref(false);
 
     const showroom = ref({
@@ -130,9 +154,33 @@ export default {
       latitude: "",
     });
 
-    const fileInputHandler = ({ file, filePreview, id }) => {
-      imgPreviewList.value[id] = filePreview;
+    const place = ref({
+      districtId: "",
+      districtName: "",
+      regionId: "",
+      regionName: "",
+    });
+
+    // -------------- ADD and DELETE IMAGES --------------
+    const fileInputHandler = ({ file, filePreview }) => {
+      imgPreviewList.value.forEach(image => {
+        if (image.id === activeImgId.value) {
+          image.image_link = filePreview;
+        }
+      });
+
       images.value.push(file);
+    };
+
+    const setActiveImg = id => {
+      activeImgId.value = id;
+    };
+
+    const deleteImageHandler = () => {};
+
+    const addImageHandler = () => {
+      imgPreviewList.value.push({ image_link: "", id: Date.now() });
+      // store.dispatch("addShowroomImage", {id: props.id, image: });
     };
 
     // -------------- EDIT SHOWROOM --------------
@@ -140,11 +188,46 @@ export default {
       store.dispatch("fetchRegions");
 
       if (props.id) {
-        // store.dispatch("fetchShowroomById", props.id);
-        // data.items.forEach((img, i) => {
-        //   imgPreviewList.value[i] = img.path;
-        // });
+        store.dispatch("fetchShowroomById", props.id).then(data => {
+          data.images.forEach((img, i) => {
+            imgPreviewList.value[i] = img;
+          });
+          showroom.value = {
+            name: data.name,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            district: data.district_id,
+            address_street: data.address_street,
+            house_number: data.address_house_number,
+          };
+          store.dispatch("fetchRegions").then(regions => {
+            regions.forEach(region => {
+              if (region.id === data.region_id) {
+                place.value = {
+                  ...place.value,
+                  regionName: region.name,
+                  regionId: region.id,
+                };
+              }
+            });
+            store.dispatch("fetchDistricts", data.region_id).then(districts => {
+              districts.items.forEach(district => {
+                if (district.id === data.district_id) {
+                  place.value = {
+                    ...place.value,
+                    districtName: district.name,
+                    districtId: district.id,
+                  };
+                }
+              });
+            });
+          });
+        });
       }
+    });
+
+    onUnmounted(() => {
+      reset();
     });
 
     // -------------- Region and Districts --------------
@@ -163,10 +246,12 @@ export default {
     });
     const cancelHandler = () => {
       notification.value.isShow = false;
+      router.push("/showrooms");
     };
 
     // -------------- Submit --------------
     const submitShowroom = () => {
+      disabled.value = true;
       const formData = new FormData();
 
       images.value.forEach(image => {
@@ -175,7 +260,7 @@ export default {
       formData.append("name", showroom.value.name);
       formData.append("district", showroom.value.district);
       formData.append("address_street", showroom.value.address_street);
-      formData.append("house_number", showroom.value.house_number);
+      formData.append("address_house_number", showroom.value.house_number);
       formData.append("longitude", showroom.value.longitude);
       formData.append("latitude", showroom.value.latitude);
 
@@ -183,28 +268,41 @@ export default {
         store
           .dispatch("updateShowroomById", { id: props.id, data: formData })
           .then(() => {
+            disabled.value = false;
             notification.value = {
               isShow: true,
               isSuccess: true,
               header: "Шоурум успешно изменен!",
             };
+          })
+          .catch(() => {
+            disabled.value = false;
           });
       } else {
-        store.dispatch("createShowroom", formData).then(() => {
-          reset();
-          notification.value = {
-            isShow: true,
-            isSuccess: true,
-            header: "Шоурум успешно зарегистрирован!",
-          };
-        });
+        store
+          .dispatch("createShowroom", formData)
+          .then(() => {
+            reset();
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+              header: "Шоурум успешно зарегистрирован!",
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
       }
     };
 
     // -------------- Reset --------------
     const reset = () => {
-      imgPreviewList.value = [""];
+      imgPreviewList.value = [{ image_link: "", id: Date.now() }];
+      activeImgId.value = 1;
       images.value = [];
+      disabled.value = false;
+
       showroom.value = {
         name: "",
         district: "",
@@ -212,6 +310,12 @@ export default {
         house_number: "",
         longitude: "",
         latitude: "",
+      };
+      place.value = {
+        districtId: "",
+        districtName: "",
+        regionId: "",
+        regionName: "",
       };
     };
 
@@ -225,8 +329,14 @@ export default {
       notification,
       cancelHandler,
       disabled,
+      place,
+      setActiveImg,
+      activeImgId,
+      addImageHandler,
+      deleteImageHandler,
       regions: computed(() => store.getters.getRegions),
       districts: computed(() => store.getters.getDistricts),
+      path: route.path,
     };
   },
 };

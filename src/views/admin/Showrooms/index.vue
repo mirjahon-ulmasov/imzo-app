@@ -41,7 +41,14 @@
             </p>
             <p>{{ showroom.region }}</p>
             <p>{{ showroom.district }}</p>
-            <p>{{ showroom.street }}</p>
+            <p>
+              {{ showroom.address_street
+              }}{{
+                showroom.address_house_number
+                  ? `, ${showroom.address_house_number}`
+                  : ""
+              }}
+            </p>
             <p>
               <router-link
                 :to="{ name: 'editShowroom', params: { id: showroom.id } }"
@@ -64,7 +71,7 @@
             </p>
           </div>
         </div>
-        <div v-else><p>There is no data</p></div>
+        <div v-else class="no-data">There is no data</div>
       </div>
     </div>
   </div>
@@ -194,10 +201,10 @@ export default {
       box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
       border-radius: 20px;
 
-      p {
+      .no-data {
+        margin-top: 1rem;
         color: #e1e1e1;
-        font-size: 24px;
-        font-weight: 500;
+        font-size: 20px;
       }
       .row {
         text-decoration: none;
