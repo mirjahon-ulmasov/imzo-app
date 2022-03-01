@@ -84,6 +84,7 @@ export default {
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
       border-bottom: 7px solid #51aafd;
+      transition: all 200ms linear;
     }
 
     .triangle-down {
@@ -92,7 +93,13 @@ export default {
       margin-left: 0.7rem;
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
-      border-top: 7px solid #51aafd;
+      border-bottom: 7px solid #51aafd;
+      transition: all 200ms linear;
+      transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
     }
   }
   .active {

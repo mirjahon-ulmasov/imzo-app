@@ -53,11 +53,10 @@ export default {
       let phone_number = this.phone_number;
       let password = this.password;
       let remember_me = this.remember_me;
-      this.$store.dispatch("auth", { phone_number, password, remember_me });
+      this.$store
+        .dispatch("auth", { phone_number, password, remember_me })
+        .then(() => this.$router.push("/"));
     },
-  },
-  mounted() {
-    console.log(this.$store);
   },
 };
 </script>
@@ -102,7 +101,7 @@ export default {
         font-style: normal;
         font-weight: normal;
         font-size: 18px;
-        line-height: 24px;
+        line-height: 26.5px;
         color: #93928e;
       }
       input {
@@ -155,8 +154,9 @@ export default {
           right: 0;
         }
         .checkbox-container {
-          width: 24px;
-          height: 24px;
+          box-sizing: border-box;
+          width: 26px;
+          height: 26px;
           background: #ffffff;
           border: 1px solid #dcdcdc;
           border-radius: 5px;
@@ -170,6 +170,7 @@ export default {
             height: 12px;
             width: 12px;
             border-radius: 3px;
+            border: none;
           }
         }
         p {

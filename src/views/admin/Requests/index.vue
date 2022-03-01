@@ -13,13 +13,21 @@
         :default="{ title: 'Замер', value: 'measurement' }"
       ></dropdown>
     </div>
+    <div class="flex-col">
+      <RequestCard />
+    </div>
   </div>
 </template>
 
 <script>
+import RequestCard from "@/components/ui/cards/RequestCard.vue";
+
 export default {
-  setup() {
+  data() {
     return {};
+  },
+  components: {
+    RequestCard,
   },
 };
 </script>
@@ -42,6 +50,27 @@ export default {
       span {
         color: #51aafd;
       }
+    }
+  }
+  .flex-col {
+    margin: 30px 0px 0px 0px;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-x: scroll;
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      border-radius: 30px;
+      background: none;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #f5f8fd;
+      border-radius: 30px;
+      border: 1px solid transparent;
+      background-clip: content-box;
     }
   }
 }

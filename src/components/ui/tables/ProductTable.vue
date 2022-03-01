@@ -14,7 +14,7 @@
       <p>Редактировать</p>
     </div>
     <div class="table-row" v-for="product in products" :key="product.id">
-      <p>Действие</p>
+      <p><Archive /></p>
       <p>{{ product.title }}</p>
       <p>{{ product.category }}</p>
       <p>{{ product.type }}</p>
@@ -24,13 +24,26 @@
       <p>{{ product.color }}</p>
       <p>{{ product.price }}</p>
       <p>{{ product.number }}</p>
-      <p>Редактировать</p>
+      <p>
+        <span class="custom-btn">
+          <img src="~@/assets/images/icons/small-edit-icon.svg" alt="" />
+          Изменить
+        </span>
+        <span class="custom-btn">
+          <img src="~@/assets/images/icons/clarity_trash-line.svg" alt="" />
+          Удалить
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import Archive from "@/components/ui/buttons/Archive.vue";
 export default {
+  components: {
+    Archive,
+  },
   data() {
     return {
       products: [
@@ -138,6 +151,7 @@ export default {
     padding: 24px;
     margin: 8px 0px;
     display: flex;
+    align-items: center;
     background: #ffffff;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
     border-radius: 15px;
@@ -191,6 +205,36 @@ export default {
       }
       &:nth-child(11) {
         width: 16%;
+        display: flex;
+        .custom-btn {
+          cursor: pointer;
+          margin-right: 50px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 16px;
+          line-height: 172.34%;
+          &:nth-child(1) {
+            color: #51aafd;
+            img {
+              margin-right: 10px;
+              padding: 10px 12px;
+              background: #edf7ff;
+              border-radius: 10px;
+            }
+          }
+          &:nth-child(2) {
+            color: rgba(255, 0, 0, 0.2);
+            img {
+              margin-right: 10px;
+              padding: 10px 12px;
+              background: #ffeded;
+              border-radius: 10px;
+            }
+          }
+        }
       }
     }
   }
