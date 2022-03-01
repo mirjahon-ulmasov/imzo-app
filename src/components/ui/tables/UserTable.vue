@@ -12,142 +12,27 @@
       <p>Дата создания</p>
     </div>
     <router-link to="/" class="table-row" v-for="user in users" :key="user.id">
-      <p>{{ user.name }}</p>
-      <p>{{ user.surname }}</p>
+      <p>{{ user.first_name }}</p>
+      <p>{{ user.last_name }}</p>
       <p>{{ user.phone_number }}</p>
-      <p>{{ user.city }}</p>
-      <p>{{ user.district }}</p>
+      <p>{{ user.region.name }}</p>
+      <p>{{ user.district.name }}</p>
       <p>{{ user.street }}</p>
-      <p>{{ user.house }}</p>
+      <p>{{ user.house_number }}</p>
       <p>{{ user.gender }}</p>
-      <p>{{ user.date }}</p>
+      <p>{{ getDate(user.created_date) }}</p>
     </router-link>
   </div>
 </template>
 <script>
 export default {
-  data() {
-    return {
-      users: [
-        {
-          id: 1,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 2,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 3,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 4,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 1,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 2,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 3,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 4,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 4,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-      ],
-    };
+  props: ["users"],
+  methods: {
+    getDate(d) {
+      let date = new Date(d);
+      let month = parseInt(date.getMonth()) + 1;
+      return date.getDate() + "." + month + "." + date.getFullYear();
+    },
   },
 };
 </script>

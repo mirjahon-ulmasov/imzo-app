@@ -39,7 +39,8 @@
       </router-link>
       <div class="dropdown-btn" @click="expanded = !expanded">
         <div class="dropdown-header">
-          <img src="@/assets/images/icons/edit-icon.svg" alt="" />
+          <img src="~@/assets/images/icons/edit-icon.svg" alt="" />
+          <p>Редактировать</p>
           <div :class="expanded ? 'triangle-down' : 'triangle-up'" />
         </div>
         <div v-if="expanded" class="dropdown-content">
@@ -56,10 +57,12 @@
     <div v-show="showBlock == true" class="flex-col" v-dragscroll.x>
       <ProductTable />
     </div>
+    <Pagination />
   </div>
 </template>
 
 <script>
+import Pagination from "@/components/helpers/Pagination.vue";
 import FilterSidebar from "@/components/ui/FilterSidebar.vue";
 import ProductCard from "@/components/ui/cards/ProductCard.vue";
 import ProductTable from "@/components/ui/tables/ProductTable.vue";
@@ -74,6 +77,7 @@ export default {
     ProductCard,
     FilterSidebar,
     ProductTable,
+    Pagination,
   },
 };
 </script>
@@ -165,24 +169,34 @@ export default {
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      width: 84px;
+      width: 212px;
       height: 44px;
       box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
       background: #ffffff;
       border-radius: 10px;
       cursor: pointer;
       padding: 0px 13px;
+      p {
+        color: #51aafd;
+        margin: 0px 5px;
+        font-family: "Inter" sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 172.34%;
+      }
       .dropdown-header {
         display: flex;
         flex-direction: row;
         align-items: center;
       }
       .dropdown-content {
+        z-index: 10;
         position: absolute;
         top: 3.5rem;
         right: 0;
         height: 201px;
-        width: 177px;
+        width: 212px;
         border-radius: 10px;
         background: #ffffff;
         box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);

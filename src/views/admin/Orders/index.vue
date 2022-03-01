@@ -44,10 +44,12 @@
     <div v-show="showBlock == true" class="flex-col" v-dragscroll.x>
       <OrderTable />
     </div>
+    <Pagination />
   </div>
 </template>
 
 <script>
+import Pagination from "@/components/helpers/Pagination.vue";
 import OrderCard from "@/components/ui/cards/OrderCard.vue";
 import FilterSidebar from "@/components/ui/FilterSidebar.vue";
 import OrderTable from "@/components/ui/tables/OrderTable.vue";
@@ -59,6 +61,7 @@ export default {
     };
   },
   components: {
+    Pagination,
     FilterSidebar,
     OrderTable,
     OrderCard,

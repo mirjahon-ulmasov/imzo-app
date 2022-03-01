@@ -28,6 +28,7 @@ export default {
   float: right;
 }
 .Sidebar {
+  z-index: 50;
   position: fixed;
   top: 0;
   right: 0;

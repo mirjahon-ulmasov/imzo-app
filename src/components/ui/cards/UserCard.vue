@@ -6,143 +6,28 @@
         class="user-photo"
         alt="user"
       />
-      <p>{{ user.name }} {{ user.surname }}</p>
+      <p>{{ user.first_name }} {{ user.last_name }}</p>
     </div>
     <ul>
       <li><span>Номер телефона:</span> {{ user.phone_number }}</li>
-      <li><span>Город:</span> {{ user.city }}</li>
-      <li><span>Район:</span> {{ user.district }}</li>
+      <li><span>Город:</span> {{ user.district.name }}</li>
+      <li><span>Район:</span> {{ user.region.name }}</li>
       <li><span>Улица:</span> {{ user.street }}</li>
-      <li><span>Дом:</span> {{ user.house }}</li>
+      <li><span>Дом:</span> {{ user.house_number }}</li>
       <li><span>Пол:</span> {{ user.gender }}</li>
-      <li><span>Дата создания:</span> {{ user.date }}</li>
+      <li><span>Дата создания:</span> {{ getDate(user.created_date) }}</li>
     </ul>
   </router-link>
 </template>
 <script>
 export default {
-  data() {
-    return {
-      users: [
-        {
-          id: 1,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 2,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 3,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 4,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 1,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 2,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 3,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        {
-          id: 4,
-          name: "Сардорбек",
-          surname: "Максудов",
-          phone_number: "+998 90 132-12-32",
-          city: "Ташкент",
-          district: "Чиланзарский",
-          street: "Шокирарык",
-          house: "7",
-          gender: "Мужской",
-          date: "16:44 19.12.2021",
-          photo: null,
-        },
-        // {
-        //   id: 4,
-        //   name: "Сардорбек",
-        //   surname: "Максудов",
-        //   phone_number: "+998 90 132-12-32",
-        //   city: "Ташкент",
-        //   district: "Чиланзарский",
-        //   street: "Шокирарык",
-        //   house: "7",
-        //   gender: "Мужской",
-        //   date: "16:44 19.12.2021",
-        //   photo: null,
-        // },
-      ],
-    };
+  props: ["users"],
+  methods: {
+    getDate(d) {
+      let date = new Date(d);
+      let month = parseInt(date.getMonth()) + 1;
+      return date.getDate() + "." + month + "." + date.getFullYear();
+    },
   },
 };
 </script>

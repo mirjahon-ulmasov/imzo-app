@@ -49,22 +49,25 @@
         ></dropdown>
       </div>
     </div>
-    <div v-show="showBlock == false" class="flex-row">
-      <UserCard />
+    <div v-if="showBlock == false" class="flex-row">
+      <UserCard :users="users" />
     </div>
-    <div v-show="showBlock == true" class="flex-col" v-dragscroll.x>
-      <UserTable />
+    <div v-if="showBlock == true" class="flex-col" v-dragscroll.x>
+      <UserTable :users="users" />
     </div>
+    <Pagination />
   </div>
 </template>
 
 <script>
+import Pagination from "@/components/helpers/Pagination.vue";
 import UserCard from "@/components/ui/cards/UserCard.vue";
 import UserTable from "@/components/ui/tables/UserTable.vue";
 export default {
   data() {
     return {
       showBlock: false,
+      users: [],
     };
   },
   methods: {
@@ -75,6 +78,13 @@ export default {
   components: {
     UserCard,
     UserTable,
+    Pagination,
+  },
+  async mounted() {
+    this.$store.dispatch("fetchUsers").then(response => {
+      this.users = response.data.items;
+      this.pagination = response.data.pagination;
+    });
   },
 };
 </script>
