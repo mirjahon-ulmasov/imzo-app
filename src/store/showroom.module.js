@@ -4,12 +4,38 @@ const state = {
   regions: null,
   districts: null,
   showroom: null,
+  images: null,
   showroom_list: null,
 };
 
 const getters = {
   getShowroomList(state) {
     return state.showroom_list;
+  },
+  getShowroom(state) {
+    return {
+      name: state.showroom.name,
+      latitude: state.showroom.latitude,
+      longitude: state.showroom.longitude,
+      district: state.showroom.district.id,
+      address_street: state.showroom.address_street,
+      address_house_number: state.showroom.address_house_number,
+    };
+  },
+  getImages(state) {
+    return state.showroom.images;
+  },
+  getDefaultPlace(state) {
+    return {
+      region: {
+        title: state.showroom.region.name,
+        value: state.showroom.region.id,
+      },
+      district: {
+        title: state.showroom.district.name,
+        value: state.showroom.district.id,
+      },
+    };
   },
   getRegions(state) {
     return state.regions?.map(region => {
@@ -30,10 +56,10 @@ const getters = {
 };
 
 const actions = {
-  fetchShowrooms(context) {
+  fetchShowrooms(context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .get("showroom/list/front")
+        .get(`showroom/list/front?filter=${payload}`)
         .then(response => response.data)
         .then(data => {
           context.commit("SET_SHOWROOM_LIST", data);
@@ -72,7 +98,7 @@ const actions = {
       axios
         .post("showroom/create", payload)
         .then(response => {
-          context.dispatch("fetchShowrooms");
+          context.dispatch("fetchShowrooms", "new");
           resolve(response);
         })
         .catch(err => reject(err));
@@ -84,7 +110,7 @@ const actions = {
       axios
         .put(`showroom/update/${id}`, data)
         .then(response => {
-          context.dispatch("fetchShowrooms");
+          context.dispatch("fetchShowrooms", "new");
           resolve(response);
         })
         .catch(err => reject(err));
@@ -96,7 +122,7 @@ const actions = {
       axios
         .delete(`showroom/delete/${payload}`)
         .then(response => {
-          context.dispatch("fetchShowrooms");
+          context.dispatch("fetchShowrooms", "new");
           resolve(response);
         })
         .catch(err => reject(err));
@@ -109,6 +135,7 @@ const actions = {
         .get(`showroom/update/detail/${payload}`)
         .then(response => response.data)
         .then(data => {
+          context.commit("SET_SHOWROOM", data);
           resolve(data);
         })
         .catch(err => reject(err));
@@ -116,14 +143,10 @@ const actions = {
   },
   // ---------------- ADD image ----------------
   addShowroomImage(context, payload) {
-    const { id, image } = payload;
     return new Promise((resolve, reject) => {
       axios
-        .post("showroom/update/add/image", { showroom_id: id, image: image })
-        .then(response => {
-          context.dispatch("fetchShowroomById", id);
-          resolve(response);
-        })
+        .post("showroom/update/add/image", payload)
+        .then(res => resolve(res))
         .catch(err => reject(err));
     });
   },
@@ -132,10 +155,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios
         .delete(`showroom/delete/image/${payload}`)
-        .then(response => {
-          context.dispatch("fetchShowroomById", payload);
-          resolve(response);
-        })
+        .then(res => resolve(res))
         .catch(err => reject(err));
     });
   },
@@ -150,6 +170,10 @@ const mutations = {
   },
   SET_DISTRICTS(state, payload) {
     state.districts = payload;
+  },
+  SET_SHOWROOM(state, payload) {
+    state.showroom = payload;
+    state.images = payload.images;
   },
 };
 

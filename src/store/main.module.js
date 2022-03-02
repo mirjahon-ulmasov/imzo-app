@@ -2,12 +2,19 @@ import axios from "@/services/api.js";
 
 const state = {
   statistics: null,
+  lineChart: {},
   welcome: [],
 };
 
 const getters = {
   getStatistics(state) {
     return state.statistics;
+  },
+  getLabelsChart(state) {
+    return Object.keys(state.lineChart);
+  },
+  getDataChart(state) {
+    return Object.values(state.lineChart);
   },
   getWelcome(state) {
     return state.welcome[0];
@@ -23,6 +30,19 @@ const actions = {
         .then(response => response.data)
         .then(data => {
           context.commit("SET_STATISTICS", data);
+          resolve(data);
+        })
+        .catch(err => reject(err));
+    });
+  },
+  fetchLineChart(context, payload) {
+    const { start, end } = payload;
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`diagram?start=${start}&end=${end}`)
+        .then(response => response.data)
+        .then(data => {
+          context.commit("SET_LINECHART", data);
           resolve(data);
         })
         .catch(err => reject(err));
@@ -55,6 +75,9 @@ const actions = {
 const mutations = {
   SET_STATISTICS(state, payload) {
     state.statistics = payload;
+  },
+  SET_LINECHART(state, payload) {
+    state.lineChart = payload;
   },
   SET_WELCOME(state, payload) {
     state.welcome = payload;

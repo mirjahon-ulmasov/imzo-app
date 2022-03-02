@@ -1,25 +1,24 @@
 // import axios from "@/services/api.js";
-import axios from "axios";
 
 const state = {};
 
 const getters = {};
 
 const actions = {
-  auth({ commit }, payload) {
-    return new Promise((resolve, reject) => {
-      axios
-        .post("http://app.imzo.uz/api/v1/admin/login", payload)
-        .then(response => {
-          const token = response.data;
-          commit("auth_success", token);
-          resolve(response);
-          localStorage.setItem("token", token.access);
-          console.log(token);
-        })
-        .catch(err => reject(err));
-    });
-  },
+  // login({ commit }, payload) {
+  //   return new Promise((resolve, reject) => {
+  //     axios
+  //       .post("user/token", payload)
+  //       .then(response => {
+  //         const token = response.data;
+  //         commit("auth_success", token);
+  //         resolve(response);
+  //         localStorage.setItem("token", token.access);
+  //         console.log(token);
+  //       })
+  //       .catch(err => reject(err));
+  //   });
+  // },
 };
 
 const mutations = {

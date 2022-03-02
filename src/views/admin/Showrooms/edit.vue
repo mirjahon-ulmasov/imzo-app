@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="(regions && path === '/showrooms/add') || place.districtName !== ''"
+    v-if="(regions && path === '/showrooms/add') || place.region.title !== ''"
   >
     <p>
       <span>Шоурумы</span>
@@ -19,7 +19,7 @@
     </div>
     <div class="images">
       <div
-        v-for="(imgPreview, i) in imgPreviewList"
+        v-for="(imgPreview, i) in images"
         :key="i"
         class="image-input"
         :style="{
@@ -77,8 +77,8 @@
               @input="getRegion"
               :options="regions"
               :default="{
-                title: place.regionName,
-                value: place.regionId,
+                title: place.region.title,
+                value: place.region.value,
               }"
             ></v-select>
           </div>
@@ -88,8 +88,8 @@
               @input="getDistrict"
               :options="districts"
               :default="{
-                title: place.districtName,
-                value: place.districtId,
+                title: place.district.title,
+                value: place.district.value,
               }"
             ></v-select>
           </div>
@@ -106,7 +106,7 @@
             <input
               type="text"
               placeholder="Введите"
-              v-model="showroom.house_number"
+              v-model="showroom.address_house_number"
             />
           </div>
           <button type="submit" class="form-btn" :disabled="disabled">
@@ -139,48 +139,65 @@ export default {
     const router = useRouter();
     const route = useRoute();
 
-    const imgPreviewList = ref([{ image_link: "", id: Date.now() }]);
-    const activeImgId = ref(1);
-    const images = ref([]);
+    const images = ref([{ id: Date.now(), file: null, image_link: "" }]);
+    const activeImgId = ref(0);
 
     const disabled = ref(false);
 
     const showroom = ref({
       name: "",
       district: "",
-      address_street: "",
-      house_number: "",
       longitude: "",
       latitude: "",
+      address_street: "",
+      address_house_number: "",
     });
 
     const place = ref({
-      districtId: "",
-      districtName: "",
-      regionId: "",
-      regionName: "",
+      region: {
+        title: "",
+        value: "",
+      },
+      district: {
+        title: "",
+        value: "",
+      },
     });
 
-    // -------------- ADD and DELETE IMAGES --------------
+    // -------------- ADD IMAGES  --------------
     const fileInputHandler = ({ file, filePreview }) => {
-      imgPreviewList.value.forEach(image => {
+      // in EDIT
+      if (props.id) {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("showroom_id", props.id);
+        store.dispatch("addShowroomImage", formData);
+      }
+      images.value.forEach(image => {
         if (image.id === activeImgId.value) {
           image.image_link = filePreview;
+          image.file = file;
         }
       });
-
-      images.value.push(file);
     };
 
     const setActiveImg = id => {
       activeImgId.value = id;
     };
 
-    const deleteImageHandler = () => {};
+    // -------------- DELETE IMAGES  --------------
+    const deleteImageHandler = () => {
+      // in EDIT
+      if (props.id) {
+        store.dispatch("deleteShowroomImage", activeImgId.value);
+      }
+      images.value = images.value.filter(
+        image => image.id !== activeImgId.value
+      );
+    };
 
     const addImageHandler = () => {
-      imgPreviewList.value.push({ image_link: "", id: Date.now() });
-      // store.dispatch("addShowroomImage", {id: props.id, image: });
+      images.value.push({ id: Date.now(), file: null, image_link: "" });
     };
 
     // -------------- EDIT SHOWROOM --------------
@@ -188,39 +205,11 @@ export default {
       store.dispatch("fetchRegions");
 
       if (props.id) {
-        store.dispatch("fetchShowroomById", props.id).then(data => {
-          data.images.forEach((img, i) => {
-            imgPreviewList.value[i] = img;
-          });
-          showroom.value = {
-            name: data.name,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            district: data.district_id,
-            address_street: data.address_street,
-            house_number: data.address_house_number,
-          };
-          store.dispatch("fetchRegions").then(regions => {
-            regions.forEach(region => {
-              if (region.id === data.region_id) {
-                place.value = {
-                  ...place.value,
-                  regionName: region.name,
-                  regionId: region.id,
-                };
-              }
-            });
-            store.dispatch("fetchDistricts", data.region_id).then(districts => {
-              districts.items.forEach(district => {
-                if (district.id === data.district_id) {
-                  place.value = {
-                    ...place.value,
-                    districtName: district.name,
-                    districtId: district.id,
-                  };
-                }
-              });
-            });
+        store.dispatch("fetchShowroomById", props.id).then(() => {
+          place.value = store.getters.getDefaultPlace;
+          showroom.value = store.getters.getShowroom;
+          store.getters.getImages.forEach((img, i) => {
+            images.value[i] = { ...img, file: null };
           });
         });
       }
@@ -253,14 +242,20 @@ export default {
     const submitShowroom = () => {
       disabled.value = true;
       const formData = new FormData();
-
-      images.value.forEach(image => {
-        formData.append("images", image);
-      });
+      if (!props.id) {
+        images.value.forEach(image => {
+          if (image.file) {
+            formData.append("images", image.file);
+          }
+        });
+      }
       formData.append("name", showroom.value.name);
       formData.append("district", showroom.value.district);
       formData.append("address_street", showroom.value.address_street);
-      formData.append("address_house_number", showroom.value.house_number);
+      formData.append(
+        "address_house_number",
+        showroom.value.address_house_number
+      );
       formData.append("longitude", showroom.value.longitude);
       formData.append("latitude", showroom.value.latitude);
 
@@ -298,7 +293,7 @@ export default {
 
     // -------------- Reset --------------
     const reset = () => {
-      imgPreviewList.value = [{ image_link: "", id: Date.now() }];
+      images.value = [{ image_link: "", id: Date.now(), file: null }];
       activeImgId.value = 1;
       images.value = [];
       disabled.value = false;
@@ -306,21 +301,25 @@ export default {
       showroom.value = {
         name: "",
         district: "",
-        address_street: "",
-        house_number: "",
         longitude: "",
         latitude: "",
+        address_street: "",
+        address_house_number: "",
       };
       place.value = {
-        districtId: "",
-        districtName: "",
-        regionId: "",
-        regionName: "",
+        region: {
+          title: "",
+          value: "",
+        },
+        district: {
+          title: "",
+          value: "",
+        },
       };
     };
 
     return {
-      imgPreviewList,
+      images,
       fileInputHandler,
       showroom,
       submitShowroom,
@@ -334,9 +333,9 @@ export default {
       activeImgId,
       addImageHandler,
       deleteImageHandler,
+      path: route.path,
       regions: computed(() => store.getters.getRegions),
       districts: computed(() => store.getters.getDistricts),
-      path: route.path,
     };
   },
 };

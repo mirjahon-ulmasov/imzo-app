@@ -1,21 +1,23 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import { dragscrollNext } from "vue-dragscroll";
 import axios from "axios";
-import VueAxios from "vue-axios";
-import router from "./router";
 import store from "./store";
+import router from "./router"; 
+import VueAxios from "vue-axios";
 import NavBar from "./layout/NavBar.vue";
+import { dragscrollNext } from "vue-dragscroll";
+import Select from "./components/helpers/Select.vue";
 import Dropdown from "./components/helpers/Dropdown.vue";
 import Searchbar from "./components/helpers/Searchbar.vue";
 import Datepicker from "./components/helpers/DatePicker.vue";
 import Notification from "./components/helpers/Notification.vue";
-import Select from "./components/helpers/Select.vue";
 import LoadingSpinner from "./components/helpers/LoadingSpinner.vue";
 
 //styles
 import "./assets/css/main.css";
 import "./assets/scss/main.scss";
+
+console.log(localStorage.getItem("token"));
 
 const app = createApp(App);
 app.use(VueAxios, axios);

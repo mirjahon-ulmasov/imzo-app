@@ -46,7 +46,7 @@ export default {
   setup(props, context) {
     let isOpen = ref(false);
     let selected = ref(
-      props.default?.value !== "" && props.default?.title !== ""
+      props.default && props.default.value !== ""
         ? props.default
         : props.options && props.options.length > 0
         ? props.options[0]

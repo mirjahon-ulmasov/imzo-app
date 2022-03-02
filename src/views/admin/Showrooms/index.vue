@@ -9,7 +9,6 @@
       <dropdown
         @input="filterPage"
         :options="[
-          { title: 'Все', value: 'all' },
           { title: 'Сначала старые', value: 'old' },
           { title: 'Сначала новые', value: 'new' },
         ]"
@@ -71,9 +70,9 @@
             </p>
           </div>
         </div>
-        <div v-else class="no-data">There is no data</div>
       </div>
     </div>
+    <div v-if="!showroomList" class="no-data">Результаты не найдены.</div>
   </div>
   <router-view></router-view>
   <notification
@@ -96,11 +95,10 @@ export default {
     const store = useStore();
     onMounted(() => {
       moment.locale("ru");
-      store.dispatch("fetchShowrooms");
     });
 
     const filterPage = value => {
-      console.log(value);
+      store.dispatch("fetchShowrooms", value);
     };
 
     // -------------- Time and Date --------------
@@ -167,6 +165,13 @@ export default {
     color: #383838;
   }
 
+  .no-data {
+    text-align: center;
+    margin-top: 1rem;
+    color: #383838;
+    font-size: 18px;
+  }
+
   .actions {
     display: flex;
     align-items: center;
@@ -199,13 +204,7 @@ export default {
       padding: 30px 32px;
       background: #ffffff;
       box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
-      border-radius: 20px;
 
-      .no-data {
-        margin-top: 1rem;
-        color: #e1e1e1;
-        font-size: 20px;
-      }
       .row {
         text-decoration: none;
         width: 100%;

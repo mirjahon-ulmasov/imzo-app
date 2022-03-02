@@ -1,26 +1,32 @@
 <template>
   <div class="page">
     <form @submit.prevent="login()" class="main-content">
-      <img class="logo" src="~@/assets/images/logo.png" alt="Logo" />
-      <label class="custom-label" for="">Номер телефона:</label>
+      <img class="logo" src="@/assets/images/logo.png" alt="Logo" />
+      <label class="custom-label" for="">Электронная почта:</label>
       <div class="custom-input">
-        <span>+998</span>
-        <input v-model="phone_number" type="text" />
+        <input v-model="user.email" type="email" />
       </div>
       <label class="custom-label" for="">Пароль:</label>
       <div class="custom-input">
         <img
-          @click.prevent="showPassword"
-          src="~@/assets/images/icons/View_hide_light.svg"
+          @click.prevent="isPassHide = !isPassHide"
+          :src="
+            require(`@/assets/images/icons/eye-${
+              isPassHide ? 'close' : 'open'
+            }.svg`)
+          "
           alt=""
         />
-        <input v-model="password" :type="type" />
+        <input
+          v-model="user.password"
+          :type="isPassHide ? 'password' : 'text'"
+        />
       </div>
       <div class="row">
         <label class="custom-checkbox" for="remember">
-          <input v-model="remember_me" id="remember" type="checkbox" />
+          <input v-model="user.remember_me" id="remember" type="checkbox" />
           <div class="checkbox-container">
-            <span v-if="remember_me == true"></span>
+            <span v-if="user.remember_me == true"></span>
           </div>
           <p>Запомнить меня</p>
         </label>
@@ -32,31 +38,22 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 export default {
-  data() {
-    return {
-      type: "password",
-      phone_number: "",
-      password: "",
-      remember_me: false,
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    const user = ref({ email: "", password: "", remember_me: false });
+    const isPassHide = ref(true);
+
+    const login = () => {
+      store.dispatch("login", user).then(() => router.push("/"));
     };
-  },
-  methods: {
-    showPassword() {
-      if (this.type === "password") {
-        this.type = "text";
-      } else {
-        this.type = "password";
-      }
-    },
-    async login() {
-      let phone_number = this.phone_number;
-      let password = this.password;
-      let remember_me = this.remember_me;
-      this.$store
-        .dispatch("auth", { phone_number, password, remember_me })
-        .then(() => this.$router.push("/"));
-    },
+
+    return { user, isPassHide, login };
   },
 };
 </script>
@@ -76,14 +73,12 @@ export default {
     .logo {
       margin: 0px auto 2.5rem auto;
       width: 255px;
-      height: 89px;
     }
     .custom-label {
-      font-style: normal;
       font-weight: 600;
       font-size: 20px;
-      line-height: 172.34%;
       color: #383838;
+      letter-spacing: 0.3px;
       margin: 24px 0px 16px 0px;
     }
     .custom-input {
@@ -94,13 +89,6 @@ export default {
         right: 5%;
         cursor: pointer;
       }
-      span {
-        position: absolute;
-        top: calc(50% - 10px);
-        left: 20px;
-        font-size: 18px;
-        color: #93928e;
-      }
       input {
         width: 100%;
         height: 55px;
@@ -110,18 +98,9 @@ export default {
         box-sizing: border-box;
         border-radius: 10px;
         letter-spacing: 1px;
+        padding: 16px 20px;
         font-size: 18px;
         color: #93928e;
-      }
-      &:nth-child(3) {
-        input {
-          padding-left: 70px;
-        }
-      }
-      &:nth-child(5) {
-        input {
-          padding-left: 16px;
-        }
       }
     }
     .row {

@@ -9,11 +9,11 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^1.13.6",
     "axios": "^0.26.0",
     "chart.js": "^3.7.1",
     "compressorjs": "^1.1.1",
     "core-js": "^3.6.5",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",

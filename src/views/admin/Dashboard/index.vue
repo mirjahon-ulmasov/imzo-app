@@ -13,7 +13,6 @@
     </div>
   </div>
   <div class="main-content" v-if="statistics">
-    <p>Количество посещений: <span>1.900.000</span></p>
     <div class="info">
       <InfoCard
         title="Заявка на товар"
@@ -131,7 +130,8 @@
       <LineGraph
         :color="stroke"
         :backgroundColor="fill"
-        :labels="daysInMonth"
+        :labels="labelChart"
+        :data="dataChart"
       />
     </div>
   </div>
@@ -150,7 +150,7 @@ export default {
   setup() {
     const store = useStore();
     // ------------------ DatePicker ------------------
-    const startDate = ref(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+    const startDate = ref(new Date(new Date().getTime() - 31 * 86400000));
     const endDate = ref(new Date());
 
     watchEffect(() => {
@@ -160,13 +160,9 @@ export default {
       store.dispatch("fetchStatistics", { start, end });
     });
 
-    const statistics = computed(() => store.getters.getStatistics);
-
     // ------------------ Line Chart data ------------------
     // dates
-    const startDateChart = ref(
-      new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
-    );
+    const startDateChart = ref(new Date(new Date().getTime() - 31 * 86400000));
     const endDateChart = ref(new Date());
 
     // colors
@@ -175,21 +171,9 @@ export default {
 
     watchEffect(() => {
       const start = moment(startDateChart.value).format("YYYY-MM-DD");
-      const end = moment(startDateChart.value).format("YYYY-MM-DD");
-      console.log("start:", start);
-      console.log("end:", end);
-    });
+      const end = moment(endDateChart.value).format("YYYY-MM-DD");
 
-    const daysInMonth = computed(() => {
-      return new Array(
-        new Date(
-          new Date().getFullYear(),
-          new Date().getMonth() + 1,
-          0
-        ).getDate()
-      )
-        .fill("")
-        .map((_, i) => i + 1);
+      store.dispatch("fetchLineChart", { start, end });
     });
 
     const filterChart = val => {
@@ -209,7 +193,6 @@ export default {
       console.log(val);
     };
     return {
-      daysInMonth,
       filterChart,
       stroke,
       fill,
@@ -217,7 +200,9 @@ export default {
       endDate,
       startDateChart,
       endDateChart,
-      statistics,
+      statistics: computed(() => store.getters.getStatistics),
+      dataChart: computed(() => store.getters.getDataChart),
+      labelChart: computed(() => store.getters.getLabelsChart),
     };
   },
 };

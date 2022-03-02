@@ -36,9 +36,7 @@ export default {
           strokeColor: this.$props.color,
           pointColor: this.$props.backgroundColor,
           pointHighlightFill: this.$props.color,
-          data: this.$props.labels.map(() =>
-            Math.floor(Math.random() * (150 - 100 + 1) + 100)
-          ),
+          data: this.$props.data,
         },
       ],
     };
@@ -57,9 +55,7 @@ export default {
             strokeColor: props.color,
             pointColor: props.backgroundColor,
             pointHighlightFill: props.color,
-            data: props.labels.map(() =>
-              Math.floor(Math.random() * (150 - 100 + 1) + 100)
-            ),
+            data: props.data,
           },
         ],
       };
@@ -79,7 +75,7 @@ export default {
 
   .chart {
     margin-top: 1rem;
-    width: 550%;
+    width: 300%;
     height: 350px;
     z-index: 1;
   }
