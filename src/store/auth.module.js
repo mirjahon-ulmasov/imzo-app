@@ -1,30 +1,58 @@
-// import axios from "@/services/api.js";
+import axios from "axios";
+const baseURL = process.env.VUE_APP_API;
 
-const state = {};
+import jwtDecode from "jwt-decode";
+import { destroy_token, get_token, save_token } from "../services/jwt.service";
 
-const getters = {};
+const state = {
+  user: null,
+  is_authenticated: false,
+};
+
+const getters = {
+  getRole(state) {
+    return state.user.user_role;
+  },
+};
 
 const actions = {
-  // login({ commit }, payload) {
-  //   return new Promise((resolve, reject) => {
-  //     axios
-  //       .post("user/token", payload)
-  //       .then(response => {
-  //         const token = response.data;
-  //         commit("auth_success", token);
-  //         resolve(response);
-  //         localStorage.setItem("token", token.access);
-  //         console.log(token);
-  //       })
-  //       .catch(err => reject(err));
-  //   });
-  // },
+  login({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${baseURL}admin/login`, payload)
+        .then(response => response.data)
+        .then(data => {
+          if (data.token) {
+            commit("SET_AUTH", data.token);
+            resolve(data);
+          }
+        })
+        .catch(err => reject(err));
+    });
+  },
+  logout({ commit }) {
+    commit("CLEAR_AUTH");
+  },
+  check_auth({ commit }) {
+    const jwt = get_token();
+    if (jwt) {
+      commit("SET_AUTH", jwt);
+    } else {
+      commit("CLEAR_AUTH");
+    }
+  },
 };
 
 const mutations = {
-  auth_success(state, token) {
-    state.status = "success";
-    state.token = token;
+  SET_AUTH(state, token) {
+    state.user = jwtDecode(token.access_token);
+    state.is_authenticated = true;
+    save_token(token);
+  },
+  CLEAR_AUTH(state) {
+    state.user = null;
+    state.is_authenticated = false;
+    destroy_token();
   },
 };
 

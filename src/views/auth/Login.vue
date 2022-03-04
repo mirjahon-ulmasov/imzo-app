@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 export default {
@@ -46,11 +46,15 @@ export default {
     const store = useStore();
     const router = useRouter();
 
+    onMounted(() => {
+      store.dispatch("logout");
+    });
+
     const user = ref({ email: "", password: "", remember_me: false });
     const isPassHide = ref(true);
 
     const login = () => {
-      store.dispatch("login", user).then(() => router.push("/"));
+      store.dispatch("login", user.value).then(() => router.push("/"));
     };
 
     return { user, isPassHide, login };

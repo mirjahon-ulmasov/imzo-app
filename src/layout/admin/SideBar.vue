@@ -1,6 +1,6 @@
 <template>
   <div class="side-bar">
-    <img :src="logo" alt="IMZO" class="logo" />
+    <img :src="require('@/assets/images/logo.png')" alt="IMZO" class="logo" />
     <div class="nav-links">
       <div class="link" :class="link === 'dashboard' ? 'active' : ''">
         <router-link to="/dashboard" class="nav-link">
@@ -127,16 +127,9 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 export default {
-  data() {
-    return {
-      logo: require("@/assets/images/logo.png"),
-    };
-  },
   setup() {
     const route = useRoute();
-
-    let link = computed(() => route.meta.link);
-    return { link };
+    return { link: computed(() => route.meta.link) };
   },
 };
 </script>

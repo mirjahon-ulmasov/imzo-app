@@ -21,10 +21,28 @@
         @click="router.push('/inbox')"
       />
       <img
+        @click="isShow = !isShow"
         src="@/assets/images/icons/users-light-blue.svg"
         class="user-img"
         alt="profile"
       />
+      <div class="dropdown animate__animated animate__fadeInDown" v-if="isShow">
+        <button @click="changeLangHandler()">
+          <img
+            :src="
+              require(`@/assets/images/icons/${
+                language === 'ru' ? 'ru' : 'uz'
+              }.svg`)
+            "
+            alt="Flag"
+          />
+          Сменить язык
+        </button>
+        <button @click="logoutHandler()">
+          <img src="@/assets/images/icons/logout.svg" alt="Logout" />
+          Выйти из аккаунта
+        </button>
+      </div>
       <div class="user-details">
         <h4>Amal Bashirov</h4>
         <p>Administrator</p>
@@ -34,17 +52,44 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 
 export default {
   props: ["title"],
   setup() {
+    const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    const link = computed(() => route.meta.link);
+    const language = ref(
+      localStorage.getItem("lang") ? localStorage.getItem("lang") : "ru"
+    );
+    const isShow = ref(false);
 
-    return { link, router };
+    const logoutHandler = () => {
+      store.dispatch("logout");
+      router.push("/login");
+    };
+
+    const changeLangHandler = () => {
+      if (language.value === "ru") {
+        localStorage.setItem("lang", "uz");
+        language.value = "uz";
+      } else {
+        localStorage.setItem("lang", "ru");
+        language.value = "ru";
+      }
+    };
+
+    return {
+      isShow,
+      router,
+      language,
+      logoutHandler,
+      changeLangHandler,
+      link: computed(() => route.meta.link),
+    };
   },
 };
 </script>
@@ -78,7 +123,37 @@ export default {
 
   .nav-right {
     display: flex;
+    position: relative;
     align-items: center;
+
+    .dropdown {
+      top: 4.5rem;
+      padding: 20px;
+      position: absolute;
+      z-index: 10;
+      background: #ffffff;
+      box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.07);
+      border-radius: 10px;
+
+      button {
+        display: flex;
+        border: none;
+        font-size: 16px;
+        align-items: center;
+        background: transparent;
+
+        img {
+          margin-right: 1rem;
+        }
+        &:first-child {
+          margin-bottom: 10px;
+          color: #51aafd;
+        }
+        &:nth-child(2) {
+          color: #ff8686;
+        }
+      }
+    }
 
     img {
       cursor: pointer;

@@ -36,10 +36,10 @@ const actions = {
     });
   },
   fetchLineChart(context, payload) {
-    const { start, end } = payload;
+    const { start, end, type } = payload;
     return new Promise((resolve, reject) => {
       axios
-        .get(`diagram?start=${start}&end=${end}`)
+        .get(`diagram?start=${start}&end=${end}&type=${type}`)
         .then(response => response.data)
         .then(data => {
           context.commit("SET_LINECHART", data);

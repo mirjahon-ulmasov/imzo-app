@@ -1,5 +1,5 @@
 <template>
-  <div>Forgot Password</div>
+  <div>Forgot pass</div>
 </template>
 
 <script>

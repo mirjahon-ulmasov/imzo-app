@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import axios from "axios";
 import store from "./store";
-import router from "./router"; 
+import router from "./router";
 import VueAxios from "vue-axios";
 import NavBar from "./layout/NavBar.vue";
 import { dragscrollNext } from "vue-dragscroll";
@@ -16,8 +16,7 @@ import LoadingSpinner from "./components/helpers/LoadingSpinner.vue";
 //styles
 import "./assets/css/main.css";
 import "./assets/scss/main.scss";
-
-console.log(localStorage.getItem("token"));
+import "animate.css";
 
 const app = createApp(App);
 app.use(VueAxios, axios);

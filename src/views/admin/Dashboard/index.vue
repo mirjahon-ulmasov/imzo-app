@@ -110,7 +110,7 @@
             @input="filterChart"
             :options="[
               { title: 'Товар', value: 'product' },
-              { title: 'Отзывы', value: 'reviews' },
+              { title: 'Отзывы', value: 'rate' },
               { title: 'Замер', value: 'measurement' },
             ]"
             :default="{ title: 'Товар', value: 'product' }"
@@ -168,29 +168,30 @@ export default {
     // colors
     const stroke = ref("#369BFF");
     const fill = ref("#efffff");
+    const type = ref("product");
 
     watchEffect(() => {
       const start = moment(startDateChart.value).format("YYYY-MM-DD");
       const end = moment(endDateChart.value).format("YYYY-MM-DD");
 
-      store.dispatch("fetchLineChart", { start, end });
+      store.dispatch("fetchLineChart", { start, end, type: type.value });
     });
 
     const filterChart = val => {
       stroke.value =
-        val === "reviews"
+        val === "rate"
           ? "#FDD751"
           : val === "measurement"
           ? "#4EC217"
           : "#369BFF";
 
       fill.value =
-        val === "reviews"
+        val === "rate"
           ? "#effff1"
           : val === "measurement"
           ? "#effff3"
           : "#efffff";
-      console.log(val);
+      type.value = val;
     };
     return {
       filterChart,
