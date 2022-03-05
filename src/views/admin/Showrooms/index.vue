@@ -12,7 +12,7 @@
           { title: 'Сначала старые', value: 'old' },
           { title: 'Сначала новые', value: 'new' },
         ]"
-        :default="{ title: 'Сначала старые', value: 'old' }"
+        :default="{ title: 'Сначала новые', value: 'new' }"
       ></dropdown>
     </div>
     <div v-dragscroll.x class="scroll">

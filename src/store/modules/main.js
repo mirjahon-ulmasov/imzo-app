@@ -22,6 +22,7 @@ const getters = {
 };
 
 const actions = {
+  // ---------------- Statistics ----------------
   fetchStatistics(context, payload) {
     const { start, end } = payload;
     return new Promise((resolve, reject) => {
@@ -49,6 +50,7 @@ const actions = {
     });
   },
 
+  // ---------------- Welcome Tab ----------------
   createWelcomeText(context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -67,6 +69,43 @@ const actions = {
           context.commit("SET_WELCOME", data);
           resolve(data);
         })
+        .catch(err => reject(err));
+    });
+  },
+
+  // ---------------- Banner Tab ----------------
+  fetchBanners() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get("news/web")
+        .then(response => response.data)
+        .then(data => {
+          resolve(data);
+        })
+        .catch(err => reject(err));
+    });
+  },
+  createBanner(_, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post("news/create", payload)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  },
+  updateBannerById(_, { id, data }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .patch(`news/${id}/edit`, data)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  },
+  deleteBannerById(_, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(`news/${payload}/delete`)
+        .then(response => resolve(response))
         .catch(err => reject(err));
     });
   },

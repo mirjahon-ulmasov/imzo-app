@@ -1,8 +1,8 @@
 import { createStore } from "vuex";
-import mainModule from "./main.module";
-import authModule from "./auth.module";
-import userModule from "./user.module";
-import showroomModule from "./showroom.module";
+import mainModule from "./modules/main";
+import authModule from "./modules/auth";
+import userModule from "./modules/user";
+import showroomModule from "./modules/showroom";
 
 export default createStore({
   state: {},

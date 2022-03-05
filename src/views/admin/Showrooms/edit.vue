@@ -128,8 +128,8 @@
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   props: ["id"],

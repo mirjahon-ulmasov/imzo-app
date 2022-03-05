@@ -1,21 +1,11 @@
 <template>
-  <div class="banner">
+  <div v-if="getBanner" class="banner">
     <h3>Количество баннеров</h3>
     <div class="actions">
-      <button
-        style="background: #edf7ff"
-        @click="
-          banners.push({
-            img: '',
-            text_ru: '',
-            text_uz: '',
-            link: '',
-          })
-        "
-      >
+      <button style="background: #edf7ff" @click="addBannerHandler()">
         <img src="@/assets/images/icons/plus-icon.svg" alt="plus" />
       </button>
-      <button style="background: #ffeded" @click="banners.pop()">
+      <button style="background: #ffeded" @click="deleteBannerHandler()">
         <img src="@/assets/images/icons/trash.svg" alt="trash" />
       </button>
     </div>
@@ -23,9 +13,9 @@
       <div
         v-for="(banner, i) in banners"
         :key="i"
-        @click="setActiveIndex(i)"
         class="count"
-        :class="{ active: isActiveIndex(i) }"
+        @click="setActiveIndex(banner.id)"
+        :class="{ active: isActiveIndex(banner.id) }"
       >
         {{ i + 1 }}
       </div>
@@ -44,8 +34,8 @@
                 rgba(255, 255, 255, 0.5) 100%
               ),
               url(${
-                imgPreview
-                  ? imgPreview
+                getBanner.imagePreview !== ''
+                  ? getBanner.imagePreview
                   : require('@/assets/images/icons/banner-1.png')
               })`,
               }"
@@ -61,7 +51,7 @@
             <input
               type="text"
               placeholder="Акция Engelberg 7000"
-              v-model="banners[activeIndex].text_ru"
+              v-model="getBanner.title_ru"
             />
           </div>
           <div class="input-form" v-show="isActiveLang('uz')">
@@ -69,7 +59,7 @@
             <input
               type="text"
               placeholder="Engelberg 7000 aksiyasi"
-              v-model="banners[activeIndex].text_uz"
+              v-model="getBanner.title_uz"
             />
           </div>
           <div class="input-form">
@@ -77,10 +67,12 @@
             <input
               type="text"
               placeholder="Введите"
-              v-model="banners[activeIndex].link"
+              v-model="getBanner.news_url"
             />
           </div>
-          <button type="submit" class="form-btn">Сохранить</button>
+          <button type="submit" class="form-btn" :disabled="disabled">
+            Сохранить
+          </button>
         </form>
       </div>
       <div class="right">
@@ -91,8 +83,8 @@
             :style="{
               'background-image': `linear-gradient(6.93deg, rgba(0, 0, 0, 0.2) 25.44%, rgba(0, 0, 0, 0) 107.17%),
             url(${
-              imgPreview
-                ? imgPreview
+              getBanner.imagePreview !== ''
+                ? getBanner.imagePreview
                 : require('@/assets/images/icons/banner-1.png')
             })`,
             }"
@@ -100,11 +92,11 @@
             <p>
               {{
                 activeLang === "ru"
-                  ? banners[activeIndex].text_ru !== ""
-                    ? banners[activeIndex].text_ru
+                  ? getBanner.title_ru !== ""
+                    ? getBanner.title_ru
                     : "Акция Engelberg 7000"
-                  : banners[activeIndex].text_uz !== ""
-                  ? banners[activeIndex].text_uz
+                  : getBanner.title_uz !== ""
+                  ? getBanner.title_uz
                   : "Engelberg 7000 aksiyasi"
               }}
             </p>
@@ -123,7 +115,8 @@
 
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
-import { reactive, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { useStore } from "vuex";
 
 export default {
   components: { FileUpload },
@@ -134,46 +127,147 @@ export default {
     },
   },
   setup(props) {
-    const activeIndex = ref(0);
+    const store = useStore();
     const isActiveLang = item => props.activeLang === item;
+
     const setActiveIndex = item => (activeIndex.value = item);
     const isActiveIndex = item => activeIndex.value === item;
+    const activeIndex = ref(Date.now());
+    const disabled = ref(false);
 
-    const banners = reactive([
+    const banners = ref([
       {
-        img: "",
-        text_ru: "",
-        text_uz: "",
-        link: "",
+        id: activeIndex.value,
+        editing: false,
+        title_ru: "",
+        title_uz: "",
+        news_url: "",
+        news_image: null,
+        imagePreview: "",
       },
     ]);
 
-    const imgPreview = ref("");
+    onMounted(() => {
+      store.dispatch("fetchBanners").then(data => {
+        activeIndex.value = data[0].id;
+        banners.value = data.map(el => {
+          return {
+            id: el.id,
+            editing: true,
+            news_image: null,
+            title_ru: el.title_ru,
+            title_uz: el.title_uz,
+            news_url: el.additional_data.url,
+            imagePreview: el.additional_data.image,
+          };
+        });
+      });
+    });
+
+    const getBanner = computed(() => {
+      return banners.value.find(banner => {
+        return banner.id === activeIndex.value;
+      });
+    });
+
+    const addBannerHandler = () => {
+      banners.value.push({
+        id: Date.now(),
+        editing: false,
+        title_ru: "",
+        title_uz: "",
+        news_url: "",
+        news_image: null,
+        imagePreview: "",
+      });
+    };
+
+    const deleteBannerHandler = () => {
+      let index = 0;
+      if (getBanner.value.editing) {
+        store.dispatch("deleteBannerById", getBanner.value.id);
+      }
+      banners.value = banners.value.filter((banner, i) => {
+        if (banner.id !== activeIndex.value) {
+          return true;
+        }
+        index = i;
+        return false;
+      });
+
+      index = index === banners.value.length ? index - 1 : index;
+      activeIndex.value = banners.value[index].id;
+    };
 
     const fileInputHandler = ({ file, filePreview }) => {
-      banners[activeIndex.value].img = file;
-      imgPreview.value = filePreview;
+      getBanner.value.news_image = file;
+      getBanner.value.imagePreview = filePreview;
     };
 
     const submitBanner = () => {
-      console.log(banners[activeIndex.value]);
-      notification.isShow = true;
-      notification.isSuccess = true;
+      disabled.value = true;
+      const formData = new FormData();
+      formData.append("title_uz", getBanner.value.title_uz);
+      formData.append("title_ru", getBanner.value.title_ru);
+      formData.append("news_url", getBanner.value.news_url);
+      if (getBanner.value.news_image) {
+        formData.append("news_image", getBanner.value.news_image);
+      }
+      if (getBanner.value.editing) {
+        store
+          .dispatch("updateBannerById", {
+            id: getBanner.value.id,
+            data: formData,
+          })
+          .then(() => {
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
+      } else {
+        store
+          .dispatch("createBanner", formData)
+          .then(response => {
+            banners.value = banners.value.map(banner => {
+              if (banner.id === activeIndex.value) {
+                return {
+                  ...banner,
+                  editing: true,
+                  id: response.data.id,
+                };
+              }
+              return { ...banner };
+            });
+            activeIndex.value = response.data.id;
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
+      }
     };
 
     // -------------- Notifications --------------
-    const notification = reactive({
+    const notification = ref({
       isShow: false,
       isSuccess: false,
     });
     const cancelHandler = () => {
-      notification.isShow = false;
+      notification.value.isShow = false;
     };
 
     return {
       notification,
       banners,
-      imgPreview,
       activeIndex,
       isActiveLang,
       fileInputHandler,
@@ -181,6 +275,10 @@ export default {
       setActiveIndex,
       isActiveIndex,
       submitBanner,
+      disabled,
+      getBanner,
+      addBannerHandler,
+      deleteBannerHandler,
     };
   },
 };

@@ -2,7 +2,11 @@ import axios from "axios";
 const baseURL = process.env.VUE_APP_API;
 
 import jwtDecode from "jwt-decode";
-import { destroy_token, get_token, save_token } from "../services/jwt.service";
+import {
+  destroy_token,
+  get_token,
+  save_token,
+} from "../../services/jwt.service";
 
 const state = {
   user: null,
