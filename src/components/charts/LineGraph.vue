@@ -40,7 +40,6 @@ export default {
         },
       ],
     };
-
     // eslint-disable-next-line no-undef
     new Chart(chart).Line(data);
   },
@@ -59,7 +58,6 @@ export default {
           },
         ],
       };
-
       // eslint-disable-next-line no-undef
       new Chart(chart).Line(data);
     });
