@@ -5,7 +5,7 @@
       <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
-      <ul v-if="options">
+      <ul v-if="options.length > 0">
         <li
           v-for="(option, i) in options"
           :key="i"
@@ -18,7 +18,9 @@
           {{ option.title }}
         </li>
       </ul>
-      <h3 v-if="!options">There is no data</h3>
+      <h3 v-if="options.length === 0" class="no-data">
+        Результаты не найдены.
+      </h3>
     </div>
   </div>
 </template>
@@ -46,7 +48,7 @@ export default {
   setup(props, context) {
     let isOpen = ref(false);
     let selected = ref(
-      props.default && props.default.value !== ""
+      props.default && props.default.title !== ""
         ? props.default
         : props.options && props.options.length > 0
         ? props.options[0]
@@ -108,9 +110,10 @@ export default {
         color: #383838;
       }
     }
-    h3 {
-      font-size: 18px;
-      color: #aaa;
+    .no-data {
+      text-align: center;
+      color: #383838;
+      font-size: 17px;
     }
   }
 }

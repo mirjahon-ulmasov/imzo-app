@@ -33,16 +33,16 @@
             :key="i"
           >
             <p>{{ showroom.name || "&#8212;" }}</p>
-            <p>{{ showroom.longitude_and_latitude }}</p>
+            <p>{{ showroom.longitude_and_latitude || "&#8212;" }}</p>
             <p>
               <span>{{ getTime(showroom.created_at) }}</span>
               {{ getDate(showroom.created_at) }}
             </p>
-            <p>{{ showroom.region }}</p>
-            <p>{{ showroom.district }}</p>
+            <p>{{ showroom.region || "&#8212;" }}</p>
+            <p>{{ showroom.district || "&#8212;" }}</p>
             <p>
-              {{ showroom.address_street
-              }}{{
+              {{ showroom.address_street }}
+              {{
                 showroom.address_house_number
                   ? `, ${showroom.address_house_number}`
                   : ""

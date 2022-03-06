@@ -199,6 +199,7 @@ export default {
       activeIndex.value = banners.value[index].id;
     };
 
+    // -------------- Image Upload --------------
     const fileInputHandler = ({ file, filePreview }) => {
       getBanner.value.news_image = file;
       getBanner.value.imagePreview = filePreview;

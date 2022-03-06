@@ -1,22 +1,11 @@
 <template>
-  <div class="banner">
+  <div v-if="getCatalog" class="catalog">
     <h3>Количество карточек</h3>
     <div class="actions">
-      <button
-        style="background: #edf7ff"
-        @click="
-          catalogs.push({
-            img: '',
-            text_ru: '',
-            text_uz: '',
-            category: '',
-            subcategory: '',
-          })
-        "
-      >
+      <button style="background: #edf7ff" @click="addCatalogHandler()">
         <img src="../../../assets/images/icons/plus-icon.svg" alt="plus" />
       </button>
-      <button style="background: #ffeded" @click="catalogs.pop()">
+      <button style="background: #ffeded" @click="deleteCatalogHandler()">
         <img src="@/assets/images/icons/trash.svg" alt="trash" />
       </button>
     </div>
@@ -24,15 +13,15 @@
       <div
         v-for="(catalog, i) in catalogs"
         :key="i"
-        @click="setActiveIndex(i)"
+        @click="setActiveIndex(catalog.id)"
         class="count"
-        :class="{ active: isActiveIndex(i) }"
+        :class="{ active: isActiveIndex(catalog.id) }"
       >
         {{ i + 1 }}
       </div>
     </div>
     <div style="display: flex; justify-content: space-between">
-      <div class="left">
+      <div class="left" v-if="categories.length > 0">
         <form @submit.prevent="submitCatalog">
           <div class="input-form">
             <h4>Добавить изображение</h4>
@@ -41,8 +30,8 @@
               :style="{
                 'background-image': `
               url(${
-                imgPreview
-                  ? imgPreview
+                getCatalog.imagePreview !== ''
+                  ? getCatalog.imagePreview
                   : require('../../../assets/images/icons/banner-2.png')
               })`,
               }"
@@ -58,7 +47,7 @@
             <input
               type="text"
               placeholder="Введите"
-              v-model="catalogs[activeIndex].text_ru"
+              v-model="getCatalog.name_ru"
             />
           </div>
           <div class="input-form" v-show="isActiveLang('uz')">
@@ -66,32 +55,23 @@
             <input
               type="text"
               placeholder="Kiriting"
-              v-model="catalogs[activeIndex].text_uz"
+              v-model="getCatalog.name_uz"
             />
           </div>
           <div class="input-form">
             <h4>Выбор категории</h4>
-            <v-select
-              @input="getCategory"
-              :options="[
-                { title: 'Товар', value: 'product' },
-                { title: 'Отзывы', value: 'reviews' },
-                { title: 'Замер', value: 'measurement' },
-              ]"
-            ></v-select>
+            <v-select @input="getCategory" :options="categories"></v-select>
           </div>
           <div class="input-form">
             <h4>Выбор подкатегории</h4>
             <v-select
               @input="getSubcategory"
-              :options="[
-                { title: 'Товар', value: 'product' },
-                { title: 'Отзывы', value: 'reviews' },
-                { title: 'Замер', value: 'measurement' },
-              ]"
+              :options="subcategories"
             ></v-select>
           </div>
-          <button type="submit" class="form-btn">Сохранить</button>
+          <button type="submit" class="form-btn" :disabled="disabled">
+            Сохранить
+          </button>
         </form>
       </div>
       <div class="right">
@@ -102,8 +82,8 @@
             :style="{
               'background-image': `
             url(${
-              imgPreview
-                ? imgPreview
+              getCatalog.imagePreview !== ''
+                ? getCatalog.imagePreview
                 : require('../../../assets/images/icons/banner-2.png')
             })`,
             }"
@@ -111,11 +91,11 @@
             <p>
               {{
                 activeLang === "ru"
-                  ? catalogs[activeIndex].text_ru !== ""
-                    ? catalogs[activeIndex].text_ru
+                  ? getCatalog.name_ru !== ""
+                    ? getCatalog.name_ru
                     : "Алюминиевые окна"
-                  : catalogs[activeIndex].text_uz !== ""
-                  ? catalogs[activeIndex].text_uz
+                  : getCatalog.name_uz !== ""
+                  ? getCatalog.name_uz
                   : "Alyuminiy oynalar"
               }}
             </p>
@@ -134,7 +114,8 @@
 
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
-import { reactive, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useStore } from "vuex";
 
 export default {
   components: { FileUpload },
@@ -145,55 +126,148 @@ export default {
     },
   },
   setup(props) {
-    const activeIndex = ref(0);
+    const store = useStore();
     const isActiveLang = item => props.activeLang === item;
     const setActiveIndex = item => (activeIndex.value = item);
     const isActiveIndex = item => activeIndex.value === item;
 
-    const catalogs = reactive([
+    const activeIndex = ref(Date.now());
+    const disabled = ref(false);
+    const catalogs = ref([
       {
-        img: "",
-        text_ru: "",
-        text_uz: "",
-        category: "",
-        subcategory: "",
+        id: activeIndex.value,
+        editing: false,
+        name_ru: "",
+        name_uz: "",
+        category_id: "",
+        image_link: null,
+        imagePreview: "",
       },
     ]);
 
+    const categories = computed(() => store.getters.getCategories);
+    const subcategories = computed(() => store.getters.getSubCategories);
+
+    const getCatalog = computed(() => {
+      return catalogs.value.find(catalog => {
+        return catalog.id === activeIndex.value;
+      });
+    });
+
+    onMounted(() => {
+      store.dispatch("fetchCategories");
+      store.dispatch("fetchCatalogs").then(data => {
+        activeIndex.value = data[0].id;
+        catalogs.value = data.map(catalog => {
+          return {
+            ...catalog,
+            editing: true,
+            image_link: null,
+            imagePreview: catalog.image_link,
+          };
+        });
+      });
+    });
+
+    // -------------- Categories --------------
     const getCategory = value => {
-      catalogs[activeIndex.value].category = value;
+      store.commit("SET_SUB_CATEGORIES", value);
+      getCatalog.value.category_id = value;
     };
 
     const getSubcategory = value => {
-      catalogs[activeIndex.value].subcategory = value;
+      getCatalog.value.category_id = value;
     };
 
-    // -------------- Image --------------
-    const imgPreview = ref("");
+    // -------------- Catalog --------------
+    const addCatalogHandler = () => {
+      catalogs.value.push({
+        id: Date.now(),
+        editing: false,
+        name_ru: "",
+        name_uz: "",
+        category_id: "",
+        image_link: null,
+        imagePreview: "",
+      });
+    };
+
+    const deleteCatalogHandler = () => {
+      let index;
+      if (getCatalog.value.editing) {
+        store.dispatch("deleteCatalogById", getCatalog.value.id);
+      }
+      catalogs.value = catalogs.value.filter((catalog, i) => {
+        if (catalog.id === activeIndex.value) {
+          index = i;
+          return false;
+        }
+        return true;
+      });
+      index = index === catalogs.value.length ? index - 1 : index;
+      activeIndex.value = catalogs.value[index].id;
+    };
+
+    // -------------- Image Upload --------------
     const fileInputHandler = ({ file, filePreview }) => {
-      catalogs[activeIndex.value].img = file;
-      imgPreview.value = filePreview;
+      getCatalog.value.image_link = file;
+      getCatalog.value.imagePreview = filePreview;
     };
 
+    // -------------- Submit --------------
     const submitCatalog = () => {
-      console.log(catalogs[activeIndex.value]);
-      notification.isShow = true;
-      notification.isSuccess = true;
+      disabled.value = true;
+      const formData = new FormData();
+      formData.append("name_ru", getCatalog.value.name_ru);
+      formData.append("name_uz", getCatalog.value.name_uz);
+      formData.append("category_id", getCatalog.value.category_id);
+
+      if (getCatalog.value.image_link) {
+        formData.append("image_link", getCatalog.value.image_link);
+      }
+
+      if (getCatalog.value.editing) {
+        console.log("I am editing");
+      } else {
+        store
+          .dispatch("createCatalog", formData)
+          .then(response => {
+            catalogs.value = catalogs.value.map(catalog => {
+              if (catalog.id === activeIndex.value) {
+                return {
+                  ...catalog,
+                  id: response.data.id,
+                  editing: true,
+                };
+              }
+              return { ...catalog };
+            });
+            activeIndex.value = response.data.id;
+
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
+      }
     };
 
     // -------------- Notifications --------------
-    const notification = reactive({
+    const notification = ref({
       isShow: false,
       isSuccess: false,
     });
     const cancelHandler = () => {
-      notification.isShow = false;
+      notification.value.isShow = false;
     };
 
     return {
       notification,
       catalogs,
-      imgPreview,
       activeIndex,
       isActiveLang,
       fileInputHandler,
@@ -201,15 +275,21 @@ export default {
       setActiveIndex,
       isActiveIndex,
       submitCatalog,
+      getCatalog,
+      disabled,
+      addCatalogHandler,
+      deleteCatalogHandler,
       getCategory,
       getSubcategory,
+      categories,
+      subcategories,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.banner {
+.catalog {
   h3 {
     font-weight: 600;
     font-size: 22px;

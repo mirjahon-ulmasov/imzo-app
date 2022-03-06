@@ -4,6 +4,8 @@ const state = {
   statistics: null,
   lineChart: {},
   welcome: [],
+  categories: [],
+  subcategories: [],
 };
 
 const getters = {
@@ -18,6 +20,17 @@ const getters = {
   },
   getWelcome(state) {
     return state.welcome[0];
+  },
+  getCategories(state) {
+    return state.categories.map(category => {
+      return {
+        value: category.id,
+        title: category.name,
+      };
+    });
+  },
+  getSubCategories(state) {
+    return state.subcategories;
   },
 };
 
@@ -109,6 +122,42 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  // ---------------- Catalog Tab ----------------
+  fetchCategories({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get("products/categories")
+        .then(response => {
+          commit("SET_CATEGORIES", response.data);
+          resolve(response);
+        })
+        .catch(err => reject(err));
+    });
+  },
+  fetchCatalogs() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get("home/catalogs")
+        .then(response => resolve(response.data))
+        .catch(err => reject(err));
+    });
+  },
+  createCatalog(_, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post("home/catalogs/create", payload)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  },
+  deleteCatalogById(_, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(`home/catalogs/${payload}`)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  },
 };
 
 const mutations = {
@@ -120,6 +169,19 @@ const mutations = {
   },
   SET_WELCOME(state, payload) {
     state.welcome = payload;
+  },
+  SET_CATEGORIES(state, payload) {
+    state.categories = payload;
+  },
+  SET_SUB_CATEGORIES(state, payload) {
+    state.subcategories = state.categories
+      .find(category => category.id === payload)
+      .children.map(subcategory => {
+        return {
+          value: subcategory.id,
+          title: subcategory.name,
+        };
+      });
   },
 };
 
