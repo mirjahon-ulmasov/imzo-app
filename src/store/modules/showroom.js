@@ -142,7 +142,7 @@ const actions = {
     });
   },
   // ---------------- ADD image ----------------
-  addShowroomImage(context, payload) {
+  addShowroomImage(_, payload) {
     return new Promise((resolve, reject) => {
       axios
         .post("showroom/update/add/image", payload)
@@ -151,10 +151,18 @@ const actions = {
     });
   },
   // ---------------- DELETE images ----------------
-  deleteShowroomImage(context, payload) {
+  deleteShowroomImage(_, payload) {
     return new Promise((resolve, reject) => {
       axios
         .delete(`showroom/delete/image/${payload}`)
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+  },
+  updateShowroomImage(_, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .put(`showroom/update/image`, payload)
         .then(res => resolve(res))
         .catch(err => reject(err));
     });

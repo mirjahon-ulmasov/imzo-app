@@ -139,10 +139,15 @@ export default {
     const router = useRouter();
     const route = useRoute();
 
-    const images = ref([{ id: Date.now(), file: null, image_link: "" }]);
-    const activeImgId = ref(0);
-
     const disabled = ref(false);
+    const activeImgId = ref(0);
+    const images = ref([
+      { id: Date.now(), file: null, image_link: "", editing: false },
+    ]);
+
+    const getImage = computed(() =>
+      images.value.find(img => img.id === activeImgId.value)
+    );
 
     const showroom = ref({
       name: "",
@@ -170,8 +175,22 @@ export default {
       if (props.id) {
         const formData = new FormData();
         formData.append("image", file);
-        formData.append("showroom_id", props.id);
-        store.dispatch("addShowroomImage", formData);
+
+        if (getImage.value.editing) {
+          formData.append("image_id", activeImgId.value);
+          store.dispatch("updateShowroomImage", formData);
+        } else {
+          formData.append("showroom_id", props.id);
+          store.dispatch("addShowroomImage", formData).then(res => {
+            images.value.forEach(image => {
+              if (image.id === activeImgId.value) {
+                image.id = res.data.image_id;
+                image.file = file;
+                image.image_link = filePreview;
+              }
+            });
+          });
+        }
       }
       images.value.forEach(image => {
         if (image.id === activeImgId.value) {
@@ -197,7 +216,12 @@ export default {
     };
 
     const addImageHandler = () => {
-      images.value.push({ id: Date.now(), file: null, image_link: "" });
+      images.value.push({
+        id: Date.now(),
+        file: null,
+        image_link: "",
+        editing: false,
+      });
     };
 
     // -------------- EDIT SHOWROOM --------------
@@ -206,10 +230,10 @@ export default {
 
       if (props.id) {
         store.dispatch("fetchShowroomById", props.id).then(() => {
+          showroom.value = { ...store.getters.getShowroom };
           place.value = store.getters.getDefaultPlace;
-          showroom.value = store.getters.getShowroom;
           store.getters.getImages.forEach((img, i) => {
-            images.value[i] = { ...img, file: null };
+            images.value[i] = { ...img, file: null, editing: true };
           });
         });
       }
@@ -224,7 +248,19 @@ export default {
       showroom.value.district = value;
     };
     const getRegion = value => {
-      store.dispatch("fetchDistricts", value);
+      if (value) {
+        store.dispatch("fetchDistricts", value);
+        // place.value = {
+        //   region: {
+        //     title: "hi",
+        //     value: value,
+        //   },
+        //   district: {
+        //     title: "",
+        //     value: "",
+        //   },
+        // };
+      }
     };
 
     // -------------- Notifications --------------

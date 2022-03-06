@@ -60,13 +60,18 @@
           </div>
           <div class="input-form">
             <h4>Выбор категории</h4>
-            <v-select @input="getCategory" :options="categories"></v-select>
+            <v-select
+              @input="getCategory"
+              :options="categories"
+              :default="defaultCategory"
+            ></v-select>
           </div>
           <div class="input-form">
             <h4>Выбор подкатегории</h4>
             <v-select
               @input="getSubcategory"
               :options="subcategories"
+              :default="defaultSubCategory"
             ></v-select>
           </div>
           <button type="submit" class="form-btn" :disabled="disabled">
@@ -114,7 +119,7 @@
 
 <script>
 import FileUpload from "@/components/helpers/FileUpload.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watchEffect } from "vue";
 import { useStore } from "vuex";
 
 export default {
@@ -147,11 +152,50 @@ export default {
 
     const categories = computed(() => store.getters.getCategories);
     const subcategories = computed(() => store.getters.getSubCategories);
+    const allcategories = computed(() => store.getters.getAllCategories);
+
+    const defaultCategory = ref({});
+    const defaultSubCategory = ref({});
 
     const getCatalog = computed(() => {
       return catalogs.value.find(catalog => {
         return catalog.id === activeIndex.value;
       });
+    });
+
+    watchEffect(() => {
+      if (allcategories.value) {
+        for (let i = 0; i < allcategories.value.length; i++) {
+          if (allcategories.value[i].id === getCatalog.value.category_id) {
+            defaultCategory.value = {
+              value: allcategories.value[i].id,
+              title: allcategories.value[i].name,
+            };
+            defaultSubCategory.value = {
+              value: "",
+              title: "",
+            };
+          } else if (
+            allcategories.value[i].id !== getCatalog.value.category_id
+          ) {
+            for (let j = 0; j < allcategories.value[i].children.length; j++) {
+              if (
+                allcategories.value[i].children[j].id ===
+                getCatalog.value.category_id
+              ) {
+                defaultCategory.value = {
+                  value: allcategories.value[i].id,
+                  title: allcategories.value[i].name,
+                };
+                defaultSubCategory.value = {
+                  value: allcategories.value[i].children[j].id,
+                  title: allcategories.value[i].children[j].name,
+                };
+              }
+            }
+          }
+        }
+      }
     });
 
     onMounted(() => {
@@ -231,19 +275,19 @@ export default {
       } else {
         store
           .dispatch("createCatalog", formData)
-          .then(response => {
+          .then(response => response.data)
+          .then(data => {
             catalogs.value = catalogs.value.map(catalog => {
               if (catalog.id === activeIndex.value) {
                 return {
                   ...catalog,
-                  id: response.data.id,
+                  id: data.data.id,
                   editing: true,
                 };
               }
               return { ...catalog };
             });
-            activeIndex.value = response.data.id;
-
+            activeIndex.value = data.data.id;
             disabled.value = false;
             notification.value = {
               isShow: true,
@@ -281,6 +325,8 @@ export default {
       deleteCatalogHandler,
       getCategory,
       getSubcategory,
+      defaultCategory,
+      defaultSubCategory,
       categories,
       subcategories,
     };

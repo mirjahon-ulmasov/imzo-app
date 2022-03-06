@@ -32,6 +32,9 @@ const getters = {
   getSubCategories(state) {
     return state.subcategories;
   },
+  getAllCategories(state) {
+    return state.categories;
+  },
 };
 
 const actions = {
@@ -176,7 +179,7 @@ const mutations = {
   SET_SUB_CATEGORIES(state, payload) {
     state.subcategories = state.categories
       .find(category => category.id === payload)
-      .children.map(subcategory => {
+      ?.children.map(subcategory => {
         return {
           value: subcategory.id,
           title: subcategory.name,

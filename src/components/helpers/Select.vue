@@ -5,7 +5,7 @@
       <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
-      <ul v-if="options.length > 0">
+      <ul v-if="options && options.length > 0">
         <li
           v-for="(option, i) in options"
           :key="i"
@@ -18,7 +18,7 @@
           {{ option.title }}
         </li>
       </ul>
-      <h3 v-if="options.length === 0" class="no-data">
+      <h3 v-if="!options || options.length === 0" class="no-data">
         Результаты не найдены.
       </h3>
     </div>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 export default {
   props: {
     options: {
@@ -47,13 +47,14 @@ export default {
 
   setup(props, context) {
     let isOpen = ref(false);
-    let selected = ref(
-      props.default && props.default.title !== ""
-        ? props.default
-        : props.options && props.options.length > 0
-        ? props.options[0]
-        : { title: "-", value: "" }
-    );
+    let selected = ref({});
+
+    watchEffect(() => {
+      selected.value =
+        props.default && props.default.title !== ""
+          ? props.default
+          : { title: "-", value: "" };
+    });
 
     onMounted(() => {
       context.emit("input", selected.value.value);
