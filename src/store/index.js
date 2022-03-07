@@ -3,6 +3,7 @@ import mainModule from "./modules/main";
 import authModule from "./modules/auth";
 import userModule from "./modules/user";
 import showroomModule from "./modules/showroom";
+import notificationModule from "./modules/notification";
 
 export default createStore({
   state: {},
@@ -13,5 +14,6 @@ export default createStore({
     auth: authModule,
     user: userModule,
     showroom: showroomModule,
+    notification: notificationModule,
   },
 });

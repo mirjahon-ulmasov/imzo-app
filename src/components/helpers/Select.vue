@@ -4,7 +4,7 @@
       {{ selected.title }}
       <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
-    <div class="dropdown-content" v-if="isOpen">
+    <div class="dropdown-content scroll" v-if="isOpen">
       <ul v-if="options && options.length > 0">
         <li
           v-for="(option, i) in options"
@@ -53,7 +53,7 @@ export default {
       selected.value =
         props.default && props.default.title !== ""
           ? props.default
-          : { title: "-", value: "" };
+          : { title: "Введите", value: "" };
     });
 
     onMounted(() => {
@@ -109,6 +109,10 @@ export default {
         list-style: none;
         font-size: 16px;
         color: #383838;
+
+        &:first-child {
+          margin-top: 0px;
+        }
       }
     }
     .no-data {

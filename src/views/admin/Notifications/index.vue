@@ -19,21 +19,27 @@
     <div v-dragscroll.x class="scroll">
       <div class="table">
         <div class="row table-header">
-          <p>Точка отправления</p>
-          <p>Текст заголовка</p>
-          <p>План отправления</p>
-          <p>Дата создания</p>
-          <p>Редактировать</p>
+          <div class="left">
+            <p>Точка отправления</p>
+            <p>Текст заголовка</p>
+            <p>План отправления</p>
+            <p>Дата создания</p>
+          </div>
+          <div class="right">
+            <p>Редактировать</p>
+          </div>
         </div>
-        <div class="row table-body" @click.self="showModal = !showModal">
-          <p>+998 90 123-32-23</p>
-          <p>
-            <span>Ваш подарок ждет вас!🎉🎁</span>
-            Вы получили 3% скидку на весь ассортимент товаров🛍
-          </p>
-          <p><span>14:55</span> 19.11.2022</p>
-          <p><span>13:44</span> 26.01.2022</p>
-          <p>
+        <div class="row table-body">
+          <div @click="showModal = !showModal" class="left">
+            <p>+998 90 123-32-23</p>
+            <p>
+              <span>Ваш подарок ждет вас!🎉🎁</span>
+              Вы получили 3% скидку на весь ассортимент товаров🛍
+            </p>
+            <p><span>14:55</span> 19.11.2022</p>
+            <p><span>13:44</span> 26.01.2022</p>
+          </div>
+          <div class="right">
             <router-link :to="{ name: 'editNotification', params: { id: 1 } }">
               <img
                 src="@/assets/images/icons/edit-small.svg"
@@ -42,15 +48,15 @@
               />
               Изменить
             </router-link>
-          </p>
-          <p>
-            <img
-              src="@/assets/images/icons/trash.svg"
-              alt="trash"
-              style="background: #ffeded"
-            />
-            Удалить
-          </p>
+            <p>
+              <img
+                src="@/assets/images/icons/trash.svg"
+                alt="trash"
+                style="background: #ffeded"
+              />
+              Удалить
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -142,26 +148,38 @@ export default {
         display: flex;
         box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
         border-radius: 15px;
-        p {
-          font-weight: 400;
-          font-size: 16px;
-          color: #93928e;
-          &:nth-child(1),
-          &:nth-child(3),
-          &:nth-child(4) {
-            width: 17%;
+
+        .left {
+          width: 75%;
+          display: flex;
+          align-items: center;
+          p {
+            font-weight: 400;
+            font-size: 16px;
+            color: #93928e;
+            width: 23%;
+            &:nth-child(2) {
+              width: 31%;
+            }
           }
-          &:nth-child(2) {
-            width: 22%;
-          }
+        }
+
+        .right {
+          width: 20%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
       }
       .table-header {
         padding: 30px 25px;
         background: #ebf5ff;
-        p {
-          font-weight: 600;
-          color: #383838;
+        .left,
+        .right {
+          p {
+            font-weight: 600;
+            color: #383838;
+          }
         }
       }
       .table-body {
@@ -169,48 +187,51 @@ export default {
         padding: 20px 25px;
         background: #ffffff;
 
-        p {
-          display: flex;
-          align-items: center;
+        .left {
+          p {
+            display: flex;
+            align-items: center;
 
-          &:first-child {
-            font-weight: 600;
-            font-size: 16px;
+            &:first-child {
+              font-weight: 600;
+              font-size: 16px;
+              color: #51aafd;
+            }
+            &:nth-child(2) {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+
+              span {
+                margin-bottom: 5px;
+              }
+            }
+            span {
+              font-weight: bold;
+              color: #383838;
+              margin-right: 5px;
+            }
+          }
+        }
+        .right {
+          a,
+          p {
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            text-decoration: none;
+
+            img {
+              border-radius: 10px;
+              margin-right: 0.7rem;
+              padding: 8px;
+            }
+          }
+          a {
             color: #51aafd;
           }
-          &:nth-child(2) {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-
-            span {
-              margin-bottom: 5px;
-            }
-          }
-          &:nth-child(5) {
-            width: 12%;
-            a {
-              display: flex;
-              color: #51aafd;
-              cursor: pointer;
-              align-items: center;
-              text-decoration: none;
-            }
-          }
-          &:last-child {
-            width: 12%;
+          p {
             color: #ec6464cc;
-            cursor: pointer;
-          }
-          span {
-            font-weight: bold;
-            color: #383838;
-            margin-right: 5px;
-          }
-          img {
-            border-radius: 10px;
-            margin-right: 0.7rem;
-            padding: 8px;
           }
         }
       }

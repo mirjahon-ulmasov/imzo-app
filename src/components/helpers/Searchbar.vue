@@ -39,7 +39,7 @@ export default {};
     border: none;
     height: 100%;
     width: 77px;
-    background: #51aafd url("~@/assets/images/icons/search.svg");
+    background: #51aafd url("~@/assets/images/icons/search-white.svg");
     background-repeat: no-repeat;
     background-position: center;
   }
