@@ -244,25 +244,24 @@ export default {
     });
 
     // -------------- Region and Districts --------------
-    const getDistrict = value => {
-      showroom.value.district = value;
+    const getDistrict = district => {
+      place.value.district = district;
+      showroom.value.district = district.value;
     };
-    const getRegion = value => {
-      if (value) {
-        store.dispatch("fetchDistricts", value);
-        // place.value = {
-        //   region: {
-        //     title: "hi",
-        //     value: value,
-        //   },
-        //   district: {
-        //     title: "",
-        //     value: "",
-        //   },
-        // };
+    const getRegion = region => {
+      if (region.value) {
+        store.dispatch("fetchDistricts", region.value);
+        place.value = {
+          region: {
+            ...region,
+          },
+          district: {
+            title: "",
+            value: "",
+          },
+        };
       }
     };
-
     // -------------- Notifications --------------
     const notification = ref({
       isShow: false,

@@ -21,12 +21,8 @@
         Опубликованные
       </button>
     </div>
-    <div class="">
-
-    </div>
-    <div class="flex-col">
-
-    </div>
+    <div class=""></div>
+    <div class="flex-col"></div>
   </div>
 </template>
 

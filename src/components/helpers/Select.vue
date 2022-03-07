@@ -12,7 +12,7 @@
           @click="
             selected = option;
             isOpen = false;
-            $emit('input', option.value);
+            $emit('input', option);
           "
         >
           {{ option.title }}
@@ -47,7 +47,7 @@ export default {
 
   setup(props, context) {
     let isOpen = ref(false);
-    let selected = ref({});
+    let selected = ref({ title: "-", value: "" });
 
     watchEffect(() => {
       selected.value =
@@ -57,7 +57,7 @@ export default {
     });
 
     onMounted(() => {
-      context.emit("input", selected.value.value);
+      context.emit("input", selected.value);
     });
     return { isOpen, selected };
   },

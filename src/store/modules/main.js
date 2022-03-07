@@ -161,6 +161,14 @@ const actions = {
         .catch(err => reject(err));
     });
   },
+  updateCatalogById(_, { id, data }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .patch(`home/catalogs/${id}`, data)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  },
 };
 
 const mutations = {

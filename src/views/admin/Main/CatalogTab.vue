@@ -214,13 +214,16 @@ export default {
     });
 
     // -------------- Categories --------------
-    const getCategory = value => {
-      store.commit("SET_SUB_CATEGORIES", value);
-      getCatalog.value.category_id = value;
+    const getCategory = category => {
+      store.commit(
+        "SET_SUB_CATEGORIES",
+        category.value || defaultCategory.value
+      );
+      getCatalog.value.category_id = category.value;
     };
 
-    const getSubcategory = value => {
-      getCatalog.value.category_id = value;
+    const getSubcategory = subcategory => {
+      getCatalog.value.category_id = subcategory.value;
     };
 
     // -------------- Catalog --------------
@@ -271,7 +274,21 @@ export default {
       }
 
       if (getCatalog.value.editing) {
-        console.log("I am editing");
+        store
+          .dispatch("updateCatalogById", {
+            id: getCatalog.value.id,
+            data: formData,
+          })
+          .then(() => {
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
       } else {
         store
           .dispatch("createCatalog", formData)
