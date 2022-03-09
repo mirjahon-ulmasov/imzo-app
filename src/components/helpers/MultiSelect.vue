@@ -1,39 +1,42 @@
 <template>
-  <div class="dropdown" @click.self="isOpen = false">
-    <div class="dropdown-input" @click="isOpen = !isOpen">
+  <div class="dropdown">
+    <div
+      class="dropdown-input"
+      @click="
+        isOpen = !isOpen;
+        $emit('getUsers', selected);
+      "
+    >
       Введите
       <div :class="isOpen ? 'triangle-up' : 'triangle-down'" />
     </div>
     <div class="dropdown-content" v-if="isOpen">
       <div class="search">
-        <input type="text" v-model="search" />
+        <input type="text" v-model="search" @input="searchHandler" />
         <span>Поиск</span>
       </div>
       <div class="result">
         <h3>Пользователи: 189.000</h3>
-        <label class="container">
+        <label @click="getAllUsers()">
+          <div class="box">
+            <div class="mark" v-show="isAll"></div>
+          </div>
           <p>Всем</p>
-          <input type="checkbox" />
-          <span class="checkmark"></span>
         </label>
       </div>
-      <div v-if="options && options.length > 0" class="scroll">
+      <div v-if="users && users.length > 0" class="scroll">
         <div
-          v-for="(option, i) in options"
+          v-for="(user, i) in searchHandler()"
           class="user-data"
-          :class="{ selected: isSelected(option) }"
+          :class="{ selected: isSelected(user) }"
           :key="i"
-          @click="
-            selected.push(option);
-            isOpen = false;
-            $emit('input', option);
-          "
+          @click="addSelect(user)"
         >
-          <span>{{ option.name }}</span>
-          <span>{{ option.phone }}</span>
+          <span>{{ user.name }}</span>
+          <span>{{ user.phone }}</span>
         </div>
       </div>
-      <h3 v-if="!options || options.length === 0" class="no-data">
+      <h3 v-if="!users || users.length === 0" class="no-data">
         Результаты не найдены.
       </h3>
     </div>
@@ -41,7 +44,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, toRefs } from "vue";
 export default {
   props: {
     options: {
@@ -63,29 +66,61 @@ export default {
   setup(props, context) {
     const search = ref("");
     const isOpen = ref(false);
+    const isAll = ref(false);
+    const { options } = toRefs(props);
+    const users = ref(options.value);
     const selected = ref([{ id: "", name: "", phone: "" }]);
 
     const isSelected = value => {
-      let is_true = false;
-      selected.value.forEach(user => {
-        if (user.id === value.id) {
-          is_true = true;
-        }
+      return selected.value.some(el => {
+        return el.id === value.id;
       });
-      return is_true;
     };
 
-    watchEffect(() => {
+    const addSelect = value => {
+      const isContain = selected.value.some(el => {
+        return el.id === value.id;
+      });
+      if (isContain) {
+        selected.value = selected.value.filter(el => el.id !== value.id);
+      } else {
+        selected.value.push(value);
+      }
+    };
+
+    const getAllUsers = () => {
+      selected.value = !isAll.value
+        ? users.value
+        : [{ id: "", name: "", phone: "" }];
+
+      isAll.value = !isAll.value;
+    };
+
+    const searchHandler = () => {
+      return users.value.filter(user =>
+        user.name.toLowerCase().startsWith(search.value.toLowerCase())
+      );
+    };
+
+    onMounted(() => {
       selected.value =
         props.default && props.default.length > 0
           ? props.default
           : [{ id: "", name: "", phone: "" }];
+      context.emit("getUsers", selected.value);
     });
 
-    onMounted(() => {
-      context.emit("input", selected.value);
-    });
-    return { isOpen, selected, search, isSelected };
+    return {
+      isOpen,
+      selected,
+      search,
+      searchHandler,
+      users,
+      isSelected,
+      addSelect,
+      getAllUsers,
+      isAll,
+    };
   },
 };
 </script>
@@ -154,7 +189,31 @@ export default {
         font-size: 18px;
         color: #383838;
       }
-      .container {
+
+      label {
+        display: flex;
+        align-items: center;
+        .box {
+          height: 24px;
+          width: 24px;
+          padding: 5px;
+          margin-right: 10px;
+          border-radius: 5px;
+          text-align: center;
+          background: #ffffff;
+          border: 0.5px solid #d0d4d9;
+
+          &:hover {
+            border: 0.5px solid #51aafdbb;
+          }
+
+          .mark {
+            width: 12px;
+            height: 12px;
+            background: #51aafd;
+            border-radius: 3px;
+          }
+        }
         p {
           font-size: 16px;
           color: #51aafd;
@@ -166,6 +225,8 @@ export default {
       max-height: 250px;
 
       .user-data {
+        display: flex;
+        justify-content: space-between;
         margin: 1rem 3px 0 3px;
         list-style: none;
         font-size: 16px;
@@ -181,10 +242,10 @@ export default {
           margin-top: 3px;
         }
         span {
-          margin-left: 20px;
           &:first-child {
             font-size: 16px;
             color: #93928e;
+            margin-left: 20px;
           }
           &:nth-child(2) {
             font-size: 16px;

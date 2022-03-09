@@ -63,18 +63,18 @@
           <div class="input-form">
             <h4>Получатели</h4>
             <MultiSelect
-              @input="getUsers"
+              @getUsers="getUsers"
               :options="[
-                { id: 1, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 2, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 3, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 4, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 5, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 6, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
+                { id: 1, name: 'Mirjahon Ulmasov', phone: '+998 90 132-12-21' },
+                { id: 2, name: 'Nusrat', phone: '+998 90 132-12-21' },
+                { id: 3, name: 'Muhammad', phone: '+998 90 132-12-21' },
+                { id: 4, name: 'Ali aka', phone: '+998 90 132-12-21' },
+                { id: 5, name: 'Shoaziz', phone: '+998 90 132-12-21' },
+                { id: 6, name: 'Nodiraka', phone: '+998 90 132-12-21' },
               ]"
               :default="[
-                { id: 1, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
-                { id: 4, name: 'Владислав Кугай', phone: '+998 90 132-12-21' },
+                { id: 1, name: 'Nusrat', phone: '+998 90 132-12-21' },
+                { id: 4, name: 'Ali aka', phone: '+998 90 132-12-21' },
               ]"
             ></MultiSelect>
           </div>
@@ -199,7 +199,6 @@ import { computed, onMounted, onUpdated, ref, watchEffect } from "vue";
 import FileUpload from "@/components/helpers/FileUpload.vue";
 import MultiSelect from "@/components/helpers/MultiSelect.vue";
 import { useStore } from "vuex";
-import moment from "moment";
 export default {
   components: { FileUpload, MultiSelect },
   props: ["id"],
@@ -248,17 +247,17 @@ export default {
     );
 
     onMounted(() => {
-      moment.locale("ru");
       store.dispatch("fetchRegions");
     });
 
     onUpdated(() => {
       if (banner.value.is_now) {
-        banner.value.time = moment().format("LT");
-        banner.value.date = new Date().toISOString().slice(0, 10);
-      } else if (!banner.value.is_now) {
-        banner.value.time = "";
-        banner.value.date = "";
+        const time = new Date();
+        banner.value.time =
+          ("0" + time.getHours()).slice(-2) +
+          ":" +
+          ("0" + time.getMinutes()).slice(-2);
+        banner.value.date = time.toISOString().slice(0, 10);
       }
     });
 
@@ -296,7 +295,7 @@ export default {
     };
 
     const getUsers = users => {
-      banner.value.receivers = users.value;
+      banner.value.receivers = users.map(user => user.id);
     };
 
     // -------------- Submit --------------
