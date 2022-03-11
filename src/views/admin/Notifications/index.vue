@@ -3,7 +3,7 @@
     <h3>Уведомления</h3>
     <div class="actions">
       <router-link :to="{ name: 'addNotification' }" class="btn">
-        <img src="@/assets/images/icons/plus-small.svg" alt="showroom" />
+        <img src="@/assets/images/icons/plus-small.svg" alt="add" />
         Добавить уведомление
       </router-link>
       <dropdown
@@ -29,71 +29,155 @@
             <p>Редактировать</p>
           </div>
         </div>
-        <div class="row table-body">
-          <div @click="showModal = !showModal" class="left">
-            <p>+998 90 123-32-23</p>
-            <p>
-              <span>Ваш подарок ждет вас!🎉🎁</span>
-              Вы получили 3% скидку на весь ассортимент товаров🛍
-            </p>
-            <p><span>14:55</span> 19.11.2022</p>
-            <p><span>13:44</span> 26.01.2022</p>
-          </div>
-          <div class="right">
-            <router-link :to="{ name: 'editNotification', params: { id: 1 } }">
+        <div v-if="notifications">
+          <div
+            class="row table-body"
+            v-for="(notif, i) in notifications"
+            :key="i"
+          >
+            <div @click="showModal = !showModal" class="left">
+              <p>+998 90 123-32-23</p>
+              <p>
+                <span>{{ notif.title_ru || "&#8212;" }}</span>
+                {{ notif.body_ru }}
+              </p>
+              <p>
+                <span>{{ getTime(notif.created_at) }}</span
+                >{{ getDate(notif.created_at) }}
+              </p>
+              <p>
+                <span>{{ getTime(notif.created_at) }}</span>
+                {{ getDate(notif.created_at) }}
+              </p>
+            </div>
+            <div class="right">
+              <router-link
+                :to="{
+                  name: 'editNotification',
+                  params: { id: notif.id || 1 },
+                }"
+              >
+                <img
+                  src="@/assets/images/icons/edit-small.svg"
+                  alt="edit"
+                  style="background: #edf7ff"
+                />
+                Изменить
+              </router-link>
+              <p @click="deleteHandler(notif.id) || 1">
+                <img
+                  src="@/assets/images/icons/trash.svg"
+                  alt="trash"
+                  style="background: #ffeded"
+                />
+                Удалить
+              </p>
+            </div>
+            <div v-show="showModal" class="modal">
               <img
-                src="@/assets/images/icons/edit-small.svg"
-                alt="edit"
-                style="background: #edf7ff"
+                src="@/assets/images/icons/datepicker-close.svg"
+                class="close"
+                alt="close"
+                @click="showModal = false"
               />
-              Изменить
-            </router-link>
-            <p>
+              <h3>Изображение</h3>
               <img
-                src="@/assets/images/icons/trash.svg"
-                alt="trash"
-                style="background: #ffeded"
+                src="@/assets/images/icons/banner-4.png"
+                alt="banner"
+                class="banner-img"
               />
-              Удалить
-            </p>
+              <h3>{{ notif.title_ru }}</h3>
+              <p>{{ notif.body_ru }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-show="showModal" class="modal">
-      <img
-        src="@/assets/images/icons/datepicker-close.svg"
-        class="close"
-        alt="close"
-        @click="showModal = false"
-      />
-      <h3>Изображение</h3>
-      <img
-        src="@/assets/images/icons/banner-4.png"
-        alt="banner"
-        class="banner-img"
-      />
-      <h3>Текст уведомления</h3>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cursus ultrices
-        massa massa, diam scelerisque molestie consectetur. Ornare sit tellus
-        etiam lacus, volutpat diam id blandit a. Vel tellus pellentesque id
-        faucibus fringilla morbi sapien. Magna in a diam proin.
-      </p>
-    </div>
+    <div v-if="!notifications" class="no-data">Результаты не найдены.</div>
   </div>
   <router-view></router-view>
+  <notification
+    :isShow="notification.isShow"
+    :header="notification.header"
+    :content="notification.content"
+    :is_success="notification.isSuccess"
+    @cancel="cancelHandler"
+    @ok="okHandler"
+  ></notification>
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import moment from "moment";
+
 export default {
   setup() {
+    const store = useStore();
     const showModal = ref(false);
+
+    onMounted(() => {
+      moment.locale("ru");
+      store.dispatch("fetchNotifications");
+    });
     const filterPage = value => {
       console.log(value);
     };
-    return { filterPage, showModal };
+
+    // -------------- Time and Date --------------
+    const getTime = time => {
+      return moment(Date.parse(time)).format("LT");
+    };
+    const getDate = date => {
+      return moment(Date.parse(date)).format("L");
+    };
+
+    // -------------- Delete Notif --------------
+    const deletedId = ref("");
+    const deleteHandler = id => {
+      deletedId.value = id;
+      notification.value = {
+        isShow: true,
+        isSuccess: false,
+        header: "Действительно хотите удалить?",
+        content: "Данные файлы будут безвозвратно удалены",
+      };
+    };
+
+    // -------------- Notifications --------------
+    const notification = ref({
+      isShow: false,
+      isSuccess: false,
+      header: "",
+      content: "",
+    });
+
+    const cancelHandler = () => {
+      notification.value = {
+        isShow: false,
+        isSuccess: false,
+        header: "",
+        content: "",
+      };
+      deletedId.value = "";
+    };
+
+    const okHandler = () => {
+      store.dispatch("notification/deleteNotificationById", deletedId.value);
+    };
+    return {
+      filterPage,
+      showModal,
+      okHandler,
+      getTime,
+      getDate,
+      notification,
+      cancelHandler,
+      deleteHandler,
+      notifications: computed(
+        () => store.getters["notification/getNotificationList"]
+      ),
+    };
   },
 };
 </script>
@@ -106,6 +190,13 @@ export default {
     font-weight: 600;
     font-size: 22px;
     color: #383838;
+  }
+
+  .no-data {
+    text-align: center;
+    margin-top: 1rem;
+    color: #383838;
+    font-size: 18px;
   }
 
   .actions {
