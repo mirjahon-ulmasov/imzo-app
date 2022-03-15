@@ -45,7 +45,7 @@
             ></v-select>
           </div>
           <div class="input-form">
-            <h4>Город</h4>
+            <h4>Область</h4>
             <v-select
               @input="getRegion"
               :options="regions"
@@ -64,18 +64,9 @@
             <h4>Получатели</h4>
             <MultiSelect
               @getUsers="getUsers"
-              :options="[
-                { id: 1, name: 'Mirjahon Ulmasov', phone: '+998 90 132-12-21' },
-                { id: 2, name: 'Nusrat', phone: '+998 90 132-12-21' },
-                { id: 3, name: 'Muhammad', phone: '+998 90 132-12-21' },
-                { id: 4, name: 'Ali aka', phone: '+998 90 132-12-21' },
-                { id: 5, name: 'Shoaziz', phone: '+998 90 132-12-21' },
-                { id: 6, name: 'Nodiraka', phone: '+998 90 132-12-21' },
-              ]"
-              :default="[
-                { id: 1, name: 'Nusrat', phone: '+998 90 132-12-21' },
-                { id: 4, name: 'Ali aka', phone: '+998 90 132-12-21' },
-              ]"
+              @search="searchHandler"
+              :default="banner.receivers"
+              :options="users"
             ></MultiSelect>
           </div>
           <div class="input-form">
@@ -144,7 +135,17 @@
               />
             </div>
           </div>
-          <button type="submit" class="form-btn">Сохранить</button>
+          <div class="input-form">
+            <h4>Ссылка</h4>
+            <input
+              type="url"
+              placeholder="Введите"
+              v-model="banner.notification_url"
+            />
+          </div>
+          <button type="submit" class="form-btn" :disabled="disabled">
+            Сохранить
+          </button>
         </form>
       </div>
       <div class="right">
@@ -152,8 +153,8 @@
           <div class="top">
             <img src="@/assets/images/logo-small.png" alt="logo" />
             <p>
-              {{ banner.date !== "" ? banner.date : "24.12.2021" }}
-              {{ banner.time !== "" ? banner.time : "16:48" }}
+              {{ banner.date }}
+              {{ banner.time }}
             </p>
           </div>
           <img
@@ -206,6 +207,7 @@ export default {
     const store = useStore();
     const activeLang = ref("ru");
     const fullBanner = ref(true);
+    const disabled = ref(false);
 
     const search = ref("");
     const filter = ref({
@@ -229,6 +231,7 @@ export default {
     const banner = ref({
       time: "",
       date: "",
+      notification_url: "",
       receivers: [],
       is_now: false,
       title_ru: "",
@@ -248,6 +251,21 @@ export default {
 
     onMounted(() => {
       store.dispatch("fetchRegions");
+
+      if (props.id) {
+        store
+          .dispatch("notification/fetchNotificationById", props.id)
+          .then(data => {
+            console.log(data);
+            banner.value = {
+              ...data,
+              image: null,
+              imagePreview: data.image,
+              time: data.time.substring(0, 5),
+            };
+            filter.value = data.filters;
+          });
+      }
     });
 
     onUpdated(() => {
@@ -295,23 +313,63 @@ export default {
     };
 
     const getUsers = users => {
-      banner.value.receivers = users.map(user => user.id);
+      banner.value.receivers = users;
+    };
+
+    const searchHandler = input => {
+      search.value = input;
     };
 
     // -------------- Submit --------------
     const submitBanner = () => {
+      disabled.value = true;
+      const formData = new FormData();
+
+      formData.append("notification_url", banner.value.notification_url);
+      formData.append("receivers", banner.value.receivers);
+      formData.append("title_ru", banner.value.title_ru);
+      formData.append("title_uz", banner.value.title_uz);
+      formData.append("body_ru", banner.value.body_ru);
+      formData.append("body_uz", banner.value.body_uz);
+      formData.append("is_now", banner.value.is_now);
+      formData.append("time", banner.value.time);
+      formData.append("date", banner.value.date);
+      formData.append("filters", JSON.stringify(filter.value));
+
+      if (banner.value.image) {
+        formData.append("image", banner.value.image);
+      }
       if (props.id) {
-        notification.value = {
-          isShow: true,
-          isSuccess: true,
-          header: "Уведомление запланированно",
-        };
+        store
+          .dispatch("notification/updateNotificationById", {
+            id: props.id,
+            data: formData,
+          })
+          .then(() => {
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+              header: "Уведомление изменено",
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
       } else {
-        notification.value = {
-          isShow: true,
-          isSuccess: true,
-          header: "Уведомление изменено",
-        };
+        store
+          .dispatch("notification/createNotification", formData)
+          .then(() => {
+            disabled.value = false;
+            notification.value = {
+              isShow: true,
+              isSuccess: true,
+              header: "Уведомление запланированно",
+            };
+          })
+          .catch(() => {
+            disabled.value = false;
+          });
       }
     };
 
@@ -340,9 +398,11 @@ export default {
       getDistrict,
       getUsers,
       getGender,
+      searchHandler,
       fileInputHandler,
       submitBanner,
       banner,
+      disabled,
       notification,
       cancelHandler,
     };

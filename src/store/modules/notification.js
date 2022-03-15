@@ -1,7 +1,7 @@
 import axios from "@/services/api.js";
 
 const state = {
-  notification_list: [1, 2],
+  notification_list: null,
   notification_users: null,
   notification: null,
 };
@@ -26,11 +26,11 @@ const actions = {
   fetchNotifications(context) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`notification`)
+        .get(`notification/web`)
         .then(response => response.data)
         .then(data => {
-          context.commit("SET_NOTIFICATION_LIST", data);
-          resolve(data);
+          context.commit("SET_NOTIFICATION_LIST", data.items);
+          resolve(data.items);
         })
         .catch(err => reject(err));
     });
@@ -39,7 +39,7 @@ const actions = {
   fetchNotificationById(context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`notification/${payload}`)
+        .get(`notification/${payload}/web`)
         .then(response => response.data)
         .then(data => {
           context.commit("SET_NOTIFICATION", data);
@@ -58,7 +58,7 @@ const actions = {
         )
         .then(response => response.data)
         .then(data => {
-          context.commit("SET_USERS", data);
+          context.commit("SET_USERS", data.items);
           resolve(data);
         })
         .catch(err => reject(err));
@@ -69,7 +69,7 @@ const actions = {
   createNotification(context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .post("notification/create", payload)
+        .post("notification/create/web", payload)
         .then(response => {
           context.dispatch("fetchNotifications");
           resolve(response);
@@ -82,7 +82,7 @@ const actions = {
   updateNotificationById(context, { id, data }) {
     return new Promise((resolve, reject) => {
       axios
-        .patch(`notification/${id}`, data)
+        .patch(`notification/${id}/web`, data)
         .then(response => {
           context.dispatch("fetchNotifications");
           resolve(response);
@@ -95,7 +95,7 @@ const actions = {
   deleteNotificationById(context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .delete(`notification/${payload}`)
+        .delete(`notification/${payload}/delete`)
         .then(response => {
           context.dispatch("fetchNotifications");
           resolve(response);

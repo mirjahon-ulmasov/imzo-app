@@ -23,7 +23,6 @@
             <p>Точка отправления</p>
             <p>Текст заголовка</p>
             <p>План отправления</p>
-            <p>Дата создания</p>
           </div>
           <div class="right">
             <p>Редактировать</p>
@@ -36,22 +35,27 @@
             :key="i"
           >
             <div @click="showModal = !showModal" class="left">
-              <p>+998 90 123-32-23</p>
+              <p>{{ notif.send_point }}</p>
               <p>
-                <span>{{ notif.title_ru || "&#8212;" }}</span>
-                {{ notif.body_ru }}
+                <span>{{ notif.title || "&#8212;" }}</span>
+                {{ notif.body }}
               </p>
               <p>
-                <span>{{ getTime(notif.created_at) }}</span
-                >{{ getDate(notif.created_at) }}
-              </p>
-              <p>
-                <span>{{ getTime(notif.created_at) }}</span>
-                {{ getDate(notif.created_at) }}
+                <span>{{ getTime(notif.sending_date) }}</span
+                >{{ getDate(notif.sending_date) }}
               </p>
             </div>
             <div class="right">
+              <p @click="deleteHandler(notif.id) || 1">
+                <img
+                  src="@/assets/images/icons/trash.svg"
+                  alt="trash"
+                  style="background: #ffeded"
+                />
+                Удалить
+              </p>
               <router-link
+                v-if="notif.is_updatable"
                 :to="{
                   name: 'editNotification',
                   params: { id: notif.id || 1 },
@@ -64,14 +68,6 @@
                 />
                 Изменить
               </router-link>
-              <p @click="deleteHandler(notif.id) || 1">
-                <img
-                  src="@/assets/images/icons/trash.svg"
-                  alt="trash"
-                  style="background: #ffeded"
-                />
-                Удалить
-              </p>
             </div>
             <div v-show="showModal" class="modal">
               <img
@@ -80,14 +76,9 @@
                 alt="close"
                 @click="showModal = false"
               />
-              <h3>Изображение</h3>
-              <img
-                src="@/assets/images/icons/banner-4.png"
-                alt="banner"
-                class="banner-img"
-              />
-              <h3>{{ notif.title_ru }}</h3>
-              <p>{{ notif.body_ru }}</p>
+              <img :src="notif.image" alt="banner" class="banner-img" />
+              <h3>{{ notif.title }}</h3>
+              <p>{{ notif.body }}</p>
             </div>
           </div>
         </div>
@@ -118,7 +109,7 @@ export default {
 
     onMounted(() => {
       moment.locale("ru");
-      store.dispatch("fetchNotifications");
+      store.dispatch("notification/fetchNotifications");
     });
     const filterPage = value => {
       console.log(value);
@@ -222,10 +213,11 @@ export default {
     }
   }
   .scroll {
+    position: relative;
     overflow-x: scroll;
 
     .table {
-      min-width: 1500px;
+      min-width: 1300px;
       width: 100%;
       height: auto;
       padding: 30px 32px;
@@ -233,30 +225,30 @@ export default {
       box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
       border-radius: 20px;
       .row {
-        text-decoration: none;
         width: 100%;
         margin: 8px 0px;
         display: flex;
-        box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
         border-radius: 15px;
+        text-decoration: none;
+        box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
 
         .left {
-          width: 75%;
+          width: 70%;
           display: flex;
           align-items: center;
           p {
             font-weight: 400;
             font-size: 16px;
             color: #93928e;
-            width: 23%;
+            width: 30%;
             &:nth-child(2) {
-              width: 31%;
+              width: 40%;
             }
           }
         }
 
         .right {
-          width: 20%;
+          width: 30%;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -332,7 +324,7 @@ export default {
     position: absolute;
     top: 20%;
     left: 20%;
-    padding: 30px;
+    padding: 50px 40px;
     border-radius: 10px;
     background: #ffffff;
     text-align: center;

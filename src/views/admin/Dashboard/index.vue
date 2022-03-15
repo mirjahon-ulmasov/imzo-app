@@ -41,13 +41,13 @@
         </p>
         <div class="charts">
           <DoughnutChart
-            :value="statistics.guest_users_percent"
+            :value="Math.round(statistics.guest_users_percent)"
             backgroundColor="#51aafd"
             hoverBackgroundColor="#4490d6"
             :rotation="90"
           />
           <DoughnutChart
-            :value="statistics.registered_users_percent"
+            :value="Math.round(statistics.registered_users_percent)"
             backgroundColor="#4ed143"
             hoverBackgroundColor="#57af4f"
           />

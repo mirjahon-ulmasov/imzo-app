@@ -12,7 +12,7 @@
     </div>
     <div class="dropdown-content" v-if="isOpen">
       <div class="search">
-        <input type="text" v-model="search" @input="searchHandler" />
+        <input type="text" v-model="search" @change="$emit('search', search)" />
         <span>Поиск</span>
       </div>
       <div class="result">
@@ -26,14 +26,21 @@
       </div>
       <div v-if="users && users.length > 0" class="scroll">
         <div
-          v-for="(user, i) in searchHandler()"
-          class="user-data"
-          :class="{ selected: isSelected(user) }"
+          v-for="(user, i) in users"
           :key="i"
-          @click="addSelect(user)"
+          :style="{
+            'background-image': `url(${
+              user.gender === 0
+                ? require('@/assets/images/icons/users-bold-blue.svg')
+                : require('@/assets/images/icons/users-bold-red.svg')
+            })`,
+          }"
+          class="user-data"
+          :class="{ selected: isSelected(user.id) }"
+          @click="addSelect(user.id)"
         >
-          <span>{{ user.name }}</span>
-          <span>{{ user.phone }}</span>
+          <span>{{ user.first_name }} {{ user.last_name }}</span>
+          <span>{{ user.phone_number || "&#8212;" }}</span>
         </div>
       </div>
       <h3 v-if="!users || users.length === 0" class="no-data">
@@ -44,7 +51,7 @@
 </template>
 
 <script>
-import { onMounted, ref, toRefs } from "vue";
+import { onMounted, onUpdated, ref, toRefs } from "vue";
 export default {
   props: {
     options: {
@@ -52,7 +59,7 @@ export default {
       required: false,
     },
     default: {
-      type: Object,
+      type: Array,
       required: false,
       default: null,
     },
@@ -69,44 +76,37 @@ export default {
     const isAll = ref(false);
     const { options } = toRefs(props);
     const users = ref(options.value);
-    const selected = ref([{ id: "", name: "", phone: "" }]);
+    const selected = ref([]);
 
-    const isSelected = value => {
+    onUpdated(() => {
+      users.value = options.value;
+    });
+
+    const isSelected = id => {
       return selected.value.some(el => {
-        return el.id === value.id;
+        return el === id;
       });
     };
 
-    const addSelect = value => {
+    const addSelect = id => {
       const isContain = selected.value.some(el => {
-        return el.id === value.id;
+        return el === id;
       });
       if (isContain) {
-        selected.value = selected.value.filter(el => el.id !== value.id);
+        selected.value = selected.value.filter(el => el !== id);
       } else {
-        selected.value.push(value);
+        selected.value.push(id);
       }
     };
 
     const getAllUsers = () => {
-      selected.value = !isAll.value
-        ? users.value
-        : [{ id: "", name: "", phone: "" }];
-
+      selected.value = !isAll.value ? users.value.map(user => user.id) : [];
       isAll.value = !isAll.value;
-    };
-
-    const searchHandler = () => {
-      return users.value.filter(user =>
-        user.name.toLowerCase().startsWith(search.value.toLowerCase())
-      );
     };
 
     onMounted(() => {
       selected.value =
-        props.default && props.default.length > 0
-          ? props.default
-          : [{ id: "", name: "", phone: "" }];
+        props.default && props.default.length > 0 ? props.default : [];
       context.emit("getUsers", selected.value);
     });
 
@@ -114,7 +114,6 @@ export default {
       isOpen,
       selected,
       search,
-      searchHandler,
       users,
       isSelected,
       addSelect,
@@ -236,7 +235,6 @@ export default {
         background-repeat: no-repeat;
         background-color: #ffffff;
         border: 0.5px solid #d0d0d0;
-        background-image: url("../../assets/images/icons/users-bold-blue.svg");
 
         &:first-child {
           margin-top: 3px;
