@@ -11,6 +11,8 @@ let jwt = null;
 if (get_token()) {
   jwt = get_token();
 }
+
+axios.defaults.headers.common["Authorization"] = `Bearer ${jwt?.access_token}`;
 const instance = axios.create({
   baseURL,
   headers: {

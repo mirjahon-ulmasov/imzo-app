@@ -49,6 +49,10 @@ const actions = {
 
 const mutations = {
   SET_AUTH(state, token) {
+    axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${token.access_token}`;
+
     state.user = jwtDecode(token.access_token);
     state.is_authenticated = true;
     save_token(token);
